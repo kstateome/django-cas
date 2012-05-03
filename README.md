@@ -53,7 +53,7 @@ callback(s) in ``settings.py``:
 
 and create the functions in ``path/to/module.py``:
 
-    def test(tree):
+    def callbackfunction(tree):
         username = tree[0][0].text
 
         user, user_created = User.objects.get_or_create(username=username)
