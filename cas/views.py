@@ -6,7 +6,7 @@ from urlparse import urljoin
 from django.http import get_host, HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
-from django_cas.models import PgtIOU
+from cas.models import PgtIOU
 from django.contrib import messages
 
 __all__ = ['login', 'logout']
