@@ -3,7 +3,7 @@
 # Allows main test class to be independent of CAS implementation platform
 # TODO: pass in iou - if cant take args write to file and read here
 import atexit
-from django_cas.models import PgtIOU
+from cas.models import PgtIOU
 
 @atexit.register
 def lookup_pgt():
