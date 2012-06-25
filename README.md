@@ -62,3 +62,21 @@ and create the functions in ``path/to/module.py``:
         profile.email = tree[0][1].text
         profile.position = tree[0][2].text
         profile.save()
+        
+
+Using CAS Gateway Feature
+-------------
+
+To use the CAS Gateway feature, first enable it in settings. Trying to use it without explicitly
+enabling this setting will raise an ImproperlyConfigured:
+
+    CAS_GATEWAY = True
+
+Then, add the ``gateway`` decorator to a view:
+
+    from cas.decorators import gateway
+
+    @gateway
+    def foo(request):
+        #stuff
+        return render(request, 'foo/bar.html')
