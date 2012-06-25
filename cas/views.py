@@ -8,7 +8,6 @@ from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django_cas.models import PgtIOU
 from django.contrib import messages
-from cas import defaults as cas_defaults
 
 __all__ = ['login', 'logout']
 
@@ -16,7 +15,7 @@ def _service_url(request, redirect_to=None, gateway=False):
     """Generates application service URL for CAS"""
 
     protocol = ('http://', 'https://')[request.is_secure()]
-    if getattr(settings, 'CAS_IGNORE_HOST', cas_defaults.CAS_IGNORE_HOST):
+    if settings.CAS_IGNORE_HOST:
         host = settings.CAS_ACTUAL_HOST
     else:
         host = get_host(request)
@@ -45,7 +44,7 @@ def _redirect_url(request):
             next = settings.CAS_REDIRECT_URL
         else:
             next = request.META.get('HTTP_REFERER', settings.CAS_REDIRECT_URL)
-        if getattr(settings, 'CAS_IGNORE_HOST', cas_defaults.CAS_IGNORE_HOST):
+        if settings.CAS_IGNORE_HOST:
             host = settings.CAS_ACTUAL_HOST
         else:
             host = get_host(request)
@@ -78,7 +77,7 @@ def _logout_url(request, next_page=None):
     url = urljoin(settings.CAS_SERVER_URL, 'logout')
     if next_page:
         protocol = ('http://', 'https://')[request.is_secure()]
-        if getattr(settings, 'CAS_IGNORE_HOST', cas_defaults.CAS_IGNORE_HOST):
+        if settings.CAS_IGNORE_HOST:
             host = settings.CAS_ACTUAL_HOST
         else:
             host = get_host(request)

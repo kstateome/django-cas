@@ -14,6 +14,8 @@ _DEFAULTS = {
     'CAS_SERVER_URL': None,
     'CAS_VERSION': '2',
     'CAS_GATEWAY': False,
+    'CAS_ACTUAL_HOST': "",
+    'CAS_IGNORE_HOST': False,
 }
 
 for key, value in _DEFAULTS.iteritems():
