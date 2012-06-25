@@ -6,6 +6,7 @@ from urlparse import urljoin
 from django.conf import settings
 
 from cas.models import User
+from cas.utils import cas_response_callbacks
 
 __all__ = ['CASBackend']
 
@@ -48,6 +49,7 @@ def _verify_cas2(ticket, service):
         response = page.read()
         tree = ElementTree.fromstring(response)
         if tree[0].tag.endswith('authenticationSuccess'):
+            cas_response_callbacks(tree)
             return tree[0][0].text
         else:
             return None
