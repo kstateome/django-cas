@@ -45,7 +45,13 @@ def permission_required(perm, login_url=None):
     return user_passes_test(lambda u: u.has_perm(perm), login_url=login_url)
 
 
+from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
+
 def gateway():
+    """Authenticates single sign on session if ticket is available,
+    but doesn't redirect to sign in url otherwise.
+    """
     if settings.CAS_GATEWAY == False:
         raise ImproperlyConfigured('CAS_GATEWAY must be set to True')
     def wrap(func):
