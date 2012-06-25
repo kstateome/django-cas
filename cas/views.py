@@ -68,7 +68,7 @@ def _login_url(service, ticket='ST', gateway=False):
     if not ticket:
         ticket = 'ST'
     login = LOGINS.get(ticket[:2],'login')
-    return = urljoin(settings.CAS_SERVER_URL, login) + '?' + urlencode(params)
+    return urljoin(settings.CAS_SERVER_URL, login) + '?' + urlencode(params)
 
 
 def _logout_url(request, next_page=None):
