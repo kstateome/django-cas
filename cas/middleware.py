@@ -1,14 +1,14 @@
 """CAS authentication middleware"""
 
 from urllib import urlencode
-
-from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.contrib.auth import logout as do_logout
 from django.contrib.auth.views import login, logout
 from django.core.urlresolvers import reverse
-
-from cas.views import login as cas_login, logout as cas_logout
+from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django_cas.exceptions import CasTicketException
+from django_cas.views import login as cas_login, logout as cas_logout
 
 __all__ = ['CASMiddleware']
 
@@ -50,3 +50,13 @@ class CASMiddleware(object):
                 return HttpResponseForbidden(error)
         params = urlencode({REDIRECT_FIELD_NAME: request.get_full_path()})
         return HttpResponseRedirect(reverse(cas_login) + '?' + params)
+
+    def process_exception(self, request, exception):
+        """When we get a CasTicketException, that is probably caused by the ticket timing out.
+        So logout/login and get the same page again."""
+        if isinstance(exception, CasTicketException):
+            do_logout(request)
+            # This assumes that request.path requires authentication.
+            return HttpResponseRedirect(request.path)
+        else:
+            return None
