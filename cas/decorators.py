@@ -76,7 +76,7 @@ def gateway():
                         pass
                 else:
                     #Not Authed, try to authenticate
-                    return login(request, request.path), False, True)
+                    return login(request, request.path, False, True)
                 
             return func(*args)
         return wrapped_f
