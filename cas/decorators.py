@@ -65,19 +65,18 @@ def gateway():
                 pass
             else:
                 #Not Authed 
-                print request.GET
                 gatewayed = request.GET.get('gatewayed')
                 if gatewayed == 'true':
                     if request.GET.get('ticket'):
                         #Not Authed, but have a ticket!
                         #Try to authenticate
-                        return login(request, request.GET.get('next'), False, True)
+                        return login(request, request.path, False, True)
                     else:
                         #Not Authed, but that's okay
                         pass
                 else:
                     #Not Authed, try to authenticate
-                    return login(request, request.GET.get('next'), False, True)
+                    return login(request, request.path), False, True)
                 
             return func(*args)
         return wrapped_f
