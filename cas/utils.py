@@ -1,7 +1,7 @@
 def cas_response_callbacks(tree):
     from django.conf import settings
     callbacks = []
-    callbacks.extend(settings.CAS_RESPONSE_CALLBACK)
+    callbacks.extend(settings.CAS_RESPONSE_CALLBACKS)
     for path in callbacks:
         i = path.rfind('.')
         module, callback = path[:i], path[i+1:]
