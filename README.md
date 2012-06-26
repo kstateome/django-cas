@@ -1,19 +1,17 @@
-django-cas
-==========
+# django-cas
 
 K-State&#39;s maintained version of django-cas
 
 This is a fork of the original which lives here https://bitbucket.org/cpcc/django-cas/overview
 
-Install
--------
+## Install
+
 
 See the document at Bitbucket
 
 https://bitbucket.org/cpcc/django-cas/overview
 
-Settings.py for CAS
--------------------
+## Settings.py for CAS
 
 Add the following to middleware if you want to use CAS::
     
@@ -28,9 +26,15 @@ Add these to ``settings.py`` to use the CAS Backend::
     CAS_SERVER_URL = "Your Cas Server"
     CAS_LOGOUT_COMPLETELY = True
 
+# Additional Features
 
-CAS on Poxies
--------------
+This fork contains additional features not found in the original:
+*  Proxied Hosts
+*  CAS Response Callbacks
+*  CAS Gateway
+*  Proxy Tickets (From Edmund Crewe) 
+
+## Proxied Hosts
 
 Part of our reason for maintaining this fork is the ability to use CAS through proxies that do not 
 send the proper HOST_HEADERS.  You can enable this by setting the following in your django settings file.
@@ -39,14 +43,13 @@ send the proper HOST_HEADERS.  You can enable this by setting the following in y
     CAS_IGNORE_HOST = False # Set this to true to enable ignoring of the host.
 
 
-Storing Data from CAS
--------------
+## CAS Response Callbacks
 
 To store data from CAS, create a callback function that accepts the ElementTree object from the
 proxyValidate response. There can be multiple callbacks, and they can live anywhere. Define the 
 callback(s) in ``settings.py``:
 
-    CAS_RESPONSE_CALLBACK = (
+    CAS_RESPONSE_CALLBACKS = (
         'path.to.module.callbackfunction',
         'anotherpath.to.module.callbackfunction2',
     )
@@ -64,8 +67,7 @@ and create the functions in ``path/to/module.py``:
         profile.save()
         
 
-Using CAS Gateway Feature
--------------
+## CAS Gateway
 
 To use the CAS Gateway feature, first enable it in settings. Trying to use it without explicitly
 enabling this setting will raise an ImproperlyConfigured:
@@ -76,7 +78,13 @@ Then, add the ``gateway`` decorator to a view:
 
     from cas.decorators import gateway
 
-    @gateway
+    @gateway()
     def foo(request):
         #stuff
         return render(request, 'foo/bar.html')
+
+        
+## Proxy Tickets
+
+This fork also includes Edmund Crewe's proxy ticket patch:
+http://code.google.com/r/edmundcrewe-proxypatch/source/browse/django-cas-proxy.patch
