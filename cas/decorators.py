@@ -43,3 +43,41 @@ def permission_required(perm, login_url=None):
     """
 
     return user_passes_test(lambda u: u.has_perm(perm), login_url=login_url)
+
+
+from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
+
+def gateway():
+    """Authenticates single sign on session if ticket is available,
+    but doesn't redirect to sign in url otherwise.
+    """
+    if settings.CAS_GATEWAY == False:
+        raise ImproperlyConfigured('CAS_GATEWAY must be set to True')
+    def wrap(func):
+        def wrapped_f(*args):
+
+            from cas.views import login
+            request = args[0]
+            
+            if request.user.is_authenticated():
+                #Not Authed                
+                pass
+            else:
+                #Not Authed 
+                gatewayed = request.GET.get('gatewayed')
+                if gatewayed == 'true':
+                    if request.GET.get('ticket'):
+                        #Not Authed, but have a ticket!
+                        #Try to authenticate
+                        return login(request, request.path, False, True)
+                    else:
+                        #Not Authed, but that's okay
+                        pass
+                else:
+                    #Not Authed, try to authenticate
+                    return login(request, request.path, False, True)
+                
+            return func(*args)
+        return wrapped_f
+    return wrap
