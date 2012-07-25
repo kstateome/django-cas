@@ -53,7 +53,8 @@ def _verify_cas2(ticket, service):
         response = page.read()
         tree = ElementTree.fromstring(response)
         if tree[0].tag.endswith('authenticationSuccess'):
-            cas_response_callbacks(tree)
+            if settings.CAS_RESPONSE_CALLBACKS:
+                cas_response_callbacks(tree)
             return tree[0][0].text
         else:
             return None
