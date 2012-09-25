@@ -15,10 +15,7 @@ def _service_url(request, redirect_to=None, gateway=False):
     """Generates application service URL for CAS"""
 
     protocol = ('http://', 'https://')[request.is_secure()]
-    if settings.CAS_IGNORE_HOST:
-        host = settings.CAS_ACTUAL_HOST
-    else:
-        host = get_host(request)
+    host = get_host(request)
     prefix = (('http://', 'https://')[request.is_secure()] + host)
     service = protocol + host + request.path
     if redirect_to:
@@ -44,10 +41,7 @@ def _redirect_url(request):
             next = settings.CAS_REDIRECT_URL
         else:
             next = request.META.get('HTTP_REFERER', settings.CAS_REDIRECT_URL)
-        if settings.CAS_IGNORE_HOST:
-            host = settings.CAS_ACTUAL_HOST
-        else:
-            host = get_host(request)
+        host = get_host(request)
         prefix = (('http://', 'https://')[request.is_secure()] + host)
         if next.startswith(prefix):
             next = next[len(prefix):]
@@ -77,10 +71,7 @@ def _logout_url(request, next_page=None):
     url = urljoin(settings.CAS_SERVER_URL, 'logout')
     if next_page:
         protocol = ('http://', 'https://')[request.is_secure()]
-        if settings.CAS_IGNORE_HOST:
-            host = settings.CAS_ACTUAL_HOST
-        else:
-            host = get_host(request)
+        host = get_host(request)
         url += '?' + urlencode({'url': protocol + host + next_page})
     return url
 
