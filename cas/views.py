@@ -95,7 +95,8 @@ def login(request, next_page=None, required=False, gateway=False):
 
         if user is not None:
             auth.login(request, user)
-            proxy_callback(request)
+            if settings.CAS_PROXY_CALLBACK:
+                proxy_callback(request)
             return HttpResponseRedirect(next_page)
         elif settings.CAS_RETRY_LOGIN or required:
             if gateway:
