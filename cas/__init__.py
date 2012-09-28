@@ -15,6 +15,7 @@ _DEFAULTS = {
     'CAS_VERSION': '2',
     'CAS_GATEWAY': False,
     'CAS_PROXY_CALLBACK': None,
+    'CAS_RESPONSE_CALLBACKS': None,
 }
 
 for key, value in _DEFAULTS.iteritems():
