@@ -14,6 +14,7 @@ _DEFAULTS = {
     'CAS_SERVER_URL': None,
     'CAS_VERSION': '2',
     'CAS_GATEWAY': False,
+    'CAS_PROXY_CALLBACK': None,
 }
 
 for key, value in _DEFAULTS.iteritems():
