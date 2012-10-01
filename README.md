@@ -36,11 +36,15 @@ This fork contains additional features not found in the original:
 
 ## Proxied Hosts
 
-Part of our reason for maintaining this fork is the ability to use CAS through proxies that do not 
-send the proper HOST_HEADERS.  You can enable this by setting the following in your django settings file.
+You will need to setup middleware to handle the use of proxies.
 
-    CAS_ACTUAL_HOST = "" # This is set to your host, which is almost always k-state.edu
-    CAS_IGNORE_HOST = False # Set this to true to enable ignoring of the host.
+Add a setting ``PROXY_DOMAIN`` of the domain you want the client to use.  Then add
+
+    MIDDLEWARE_CLASSES = (
+    'cas.middleware.ProxyMiddleware',
+    )
+
+This middleware needs to be added before the django ``common`` middleware.
 
 
 ## CAS Response Callbacks
