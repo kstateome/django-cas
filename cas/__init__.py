@@ -16,6 +16,8 @@ _DEFAULTS = {
     'CAS_GATEWAY': False,
     'CAS_ACTUAL_HOST': "",
     'CAS_IGNORE_HOST': False,
+    'CAS_PROXY_CALLBACK': None,
+    'CAS_RESPONSE_CALLBACKS': None,
 }
 
 for key, value in _DEFAULTS.iteritems():
