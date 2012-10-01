@@ -36,13 +36,13 @@ This fork contains additional features not found in the original:
 
 ## Proxied Hosts
 
-You will need to setup middleware to handle the use of proxies.  Something similar to the following:
+You will need to setup middleware to handle the use of proxies.
 
-    class ProxyMiddleware(object):
+Add a setting ``PROXY_DOMAIN`` of the domain you want the client to use.  Then add
 
-        # Middleware used to "fake" the django app that it lives at the Proxy Domain
-        def process_request(self, request):
-            request.META['HTTP_HOST'] = getattr(settings, 'PROXY_DOMAIN', PROXY_DOMAIN)
+    MIDDLEWARE_CLASSES = (
+    'cas.middleware.ProxyMiddleware',
+    )
 
 This middleware needs to be added before the django ``common`` middleware.
 
