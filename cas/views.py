@@ -1,7 +1,7 @@
 """CAS login/logout replacement views"""
 from datetime import datetime
 from urllib import urlencode
-from urlparse import urljoin
+import urlparse
 
 from django.http import get_host, HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.conf import settings
@@ -18,13 +18,23 @@ def _service_url(request, redirect_to=None, gateway=False):
     host = get_host(request)
     prefix = (('http://', 'https://')[request.is_secure()] + host)
     service = protocol + host + request.path
-    if redirect_to:
+    if redirect_to:        
         if '?' in service:
             service += '&'
         else:
             service += '?'
         if gateway:
-            service += urlencode({REDIRECT_FIELD_NAME: redirect_to, 'gatewayed': 'true'})
+            """ If gateway, capture params and reencode them before returning a url """
+            split = redirect_to.split('?')
+            redirect_to = split[0]
+            parsed = urlparse.parse_qs(split[1])
+            for k, v in parsed.iteritems():
+                if len(v) == 1:
+                    parsed[k] = v[0] #because parse_qs returns a list of params
+        
+            gateway_params = {REDIRECT_FIELD_NAME: redirect_to, 'gatewayed': 'true'}
+            extra_params = dict(gateway_params.items() + parsed.items())
+            service += urlencode(extra_params)
         else:
             service += urlencode({REDIRECT_FIELD_NAME: redirect_to})
     return service
@@ -57,18 +67,17 @@ def _login_url(service, ticket='ST', gateway=False):
     else:
         params = {'service': service}
     if settings.CAS_EXTRA_LOGIN_PARAMS:
-        print "EXTRA PARAMS!!"
         params.update(settings.CAS_EXTRA_LOGIN_PARAMS)
     if not ticket:
         ticket = 'ST'
     login = LOGINS.get(ticket[:2],'login')
-    return urljoin(settings.CAS_SERVER_URL, login) + '?' + urlencode(params)
+    return urlparse.urljoin(settings.CAS_SERVER_URL, login) + '?' + urlencode(params)
 
 
 def _logout_url(request, next_page=None):
     """Generates CAS logout URL"""
 
-    url = urljoin(settings.CAS_SERVER_URL, 'logout')
+    url = urlparse.urljoin(settings.CAS_SERVER_URL, 'logout')
     if next_page:
         protocol = ('http://', 'https://')[request.is_secure()]
         host = get_host(request)
