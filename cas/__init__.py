@@ -14,8 +14,6 @@ _DEFAULTS = {
     'CAS_SERVER_URL': None,
     'CAS_VERSION': '2',
     'CAS_GATEWAY': False,
-    'CAS_ACTUAL_HOST': "",
-    'CAS_IGNORE_HOST': False,
     'CAS_PROXY_CALLBACK': None,
     'CAS_RESPONSE_CALLBACKS': None,
 }
