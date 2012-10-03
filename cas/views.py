@@ -1,7 +1,7 @@
 """CAS login/logout replacement views"""
 from datetime import datetime
 from urllib import urlencode
-from urlparse import urljoin
+import urlparse
 
 from django.http import get_host, HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.conf import settings
@@ -15,19 +15,26 @@ def _service_url(request, redirect_to=None, gateway=False):
     """Generates application service URL for CAS"""
 
     protocol = ('http://', 'https://')[request.is_secure()]
-    if settings.CAS_IGNORE_HOST:
-        host = settings.CAS_ACTUAL_HOST
-    else:
-        host = get_host(request)
+    host = get_host(request)
     prefix = (('http://', 'https://')[request.is_secure()] + host)
     service = protocol + host + request.path
-    if redirect_to:
+    if redirect_to:        
         if '?' in service:
             service += '&'
         else:
             service += '?'
         if gateway:
-            service += urlencode({REDIRECT_FIELD_NAME: redirect_to, 'gatewayed': 'true'})
+            """ If gateway, capture params and reencode them before returning a url """
+            split = redirect_to.split('?')
+            redirect_to = split[0]
+            parsed = urlparse.parse_qs(split[1])
+            for k, v in parsed.iteritems():
+                if len(v) == 1:
+                    parsed[k] = v[0] #because parse_qs returns a list of params
+        
+            gateway_params = {REDIRECT_FIELD_NAME: redirect_to, 'gatewayed': 'true'}
+            extra_params = dict(gateway_params.items() + parsed.items())
+            service += urlencode(extra_params)
         else:
             service += urlencode({REDIRECT_FIELD_NAME: redirect_to})
     return service
@@ -44,10 +51,7 @@ def _redirect_url(request):
             next = settings.CAS_REDIRECT_URL
         else:
             next = request.META.get('HTTP_REFERER', settings.CAS_REDIRECT_URL)
-        if settings.CAS_IGNORE_HOST:
-            host = settings.CAS_ACTUAL_HOST
-        else:
-            host = get_host(request)
+        host = get_host(request)
         prefix = (('http://', 'https://')[request.is_secure()] + host)
         if next.startswith(prefix):
             next = next[len(prefix):]
@@ -63,24 +67,20 @@ def _login_url(service, ticket='ST', gateway=False):
     else:
         params = {'service': service}
     if settings.CAS_EXTRA_LOGIN_PARAMS:
-        print "EXTRA PARAMS!!"
         params.update(settings.CAS_EXTRA_LOGIN_PARAMS)
     if not ticket:
         ticket = 'ST'
     login = LOGINS.get(ticket[:2],'login')
-    return urljoin(settings.CAS_SERVER_URL, login) + '?' + urlencode(params)
+    return urlparse.urljoin(settings.CAS_SERVER_URL, login) + '?' + urlencode(params)
 
 
 def _logout_url(request, next_page=None):
     """Generates CAS logout URL"""
 
-    url = urljoin(settings.CAS_SERVER_URL, 'logout')
+    url = urlparse.urljoin(settings.CAS_SERVER_URL, 'logout')
     if next_page:
         protocol = ('http://', 'https://')[request.is_secure()]
-        if settings.CAS_IGNORE_HOST:
-            host = settings.CAS_ACTUAL_HOST
-        else:
-            host = get_host(request)
+        host = get_host(request)
         url += '?' + urlencode({'url': protocol + host + next_page})
     return url
 
@@ -104,7 +104,8 @@ def login(request, next_page=None, required=False, gateway=False):
 
         if user is not None:
             auth.login(request, user)
-            proxy_callback(request)
+            if settings.CAS_PROXY_CALLBACK:
+                proxy_callback(request)
             return HttpResponseRedirect(next_page)
         elif settings.CAS_RETRY_LOGIN or required:
             if gateway:
