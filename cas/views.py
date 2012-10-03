@@ -25,18 +25,10 @@ def _service_url(request, redirect_to=None, gateway=False):
             service += '?'
         if gateway:
             """ If gateway, capture params and reencode them before returning a url """
-            split = redirect_to.split('?')
-            redirect_to = split[0]
-            parsed = urlparse.parse_qs(split[1])
-            for k, v in parsed.iteritems():
-                if len(v) == 1:
-                    parsed[k] = v[0] #because parse_qs returns a list of params
-        
             gateway_params = {REDIRECT_FIELD_NAME: redirect_to, 'gatewayed': 'true'}
-            extra_params = dict(gateway_params.items() + parsed.items())
+            query_dict = request.GET.copy()
+            extra_params = dict(gateway_params.items() + query_dict.items())
             service += urlencode(extra_params)
-        else:
-            service += urlencode({REDIRECT_FIELD_NAME: redirect_to})
     return service
 
 
