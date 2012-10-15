@@ -29,6 +29,8 @@ def _service_url(request, redirect_to=None, gateway=False):
             query_dict = request.GET.copy()
             extra_params = dict(gateway_params.items() + query_dict.items())
             service += urlencode(extra_params)
+        else:
+            service += urlencode({REDIRECT_FIELD_NAME: redirect_to})
     return service
 
 
