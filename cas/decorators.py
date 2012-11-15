@@ -5,6 +5,7 @@ try:
 except ImportError:
     from django.utils.functional import wraps
 
+from urllib import urlencode
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, HttpResponseRedirect
@@ -61,22 +62,22 @@ def gateway():
             request = args[0]
             
             if request.user.is_authenticated():
-                #Not Authed                
+                #Is Authed, fine
                 pass
             else:
-                #Not Authed 
-                gatewayed = request.GET.get('gatewayed')
-                if gatewayed == 'true':
-                    if request.GET.get('ticket'):
-                        #Not Authed, but have a ticket!
-                        #Try to authenticate
-                        return login(request, request.path, False, True)
-                    else:
-                        #Not Authed, but that's okay
-                        pass
+                path_with_params = request.path + '?' + urlencode(request.GET.copy())
+                if request.GET.get('ticket'):
+                    #Not Authed, but have a ticket!
+                    #Try to authenticate
+                    return login(request, path_with_params, False, True)
                 else:
-                    #Not Authed, try to authenticate
-                    return login(request, request.path, False, True)
+                    #Not Authed, but no ticket
+                    gatewayed = request.GET.get('gatewayed')
+                    if gatewayed == 'true':
+                        pass
+                    else:
+                        #Not Authed, try to authenticate
+                        return login(request, path_with_params, False, True)
                 
             return func(*args)
         return wrapped_f
