@@ -54,14 +54,12 @@ def _verify_cas2(ticket, service):
         response = page.read()
         tree = ElementTree.fromstring(response)
 
-        #Terribly useful for debuggin
-        """
-        from xml.dom.minidom import parseString
-        from xml.etree import ElementTree
-        txt = ElementTree.tostring(tree)
-        print parseString(txt).toprettyxml()
-        """
-
+        #Useful for debugging
+        #from xml.dom.minidom import parseString
+        #from xml.etree import ElementTree
+        #txt = ElementTree.tostring(tree)
+        #print parseString(txt).toprettyxml()
+        
         if tree[0].tag.endswith('authenticationSuccess'):
             if settings.CAS_RESPONSE_CALLBACKS:
                 cas_response_callbacks(tree)
