@@ -2,6 +2,7 @@
 from datetime import datetime
 from urllib import urlencode
 import urlparse
+from operator import itemgetter
 
 from django.http import get_host, HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.conf import settings
@@ -25,10 +26,24 @@ def _service_url(request, redirect_to=None, gateway=False):
             service += '?'
         if gateway:
             """ If gateway, capture params and reencode them before returning a url """
-            gateway_params = {REDIRECT_FIELD_NAME: redirect_to, 'gatewayed': 'true'}
+            gateway_params = [ (REDIRECT_FIELD_NAME, redirect_to), ('gatewayed','true') ]
             query_dict = request.GET.copy()
-            extra_params = dict(gateway_params.items() + query_dict.items())
-            service += urlencode(extra_params)
+            try:
+                del query_dict['ticket']
+            except:
+                pass
+            query_list = query_dict.items()
+
+            #remove duplicate params
+            for item in query_list:
+                for index, item2 in enumerate(gateway_params):
+                    if item[0] == item2[0]:
+                        gateway_params.pop(index)
+            extra_params = gateway_params + query_list
+            
+            #Sort params by key name so they are always in the same order.
+            sorted_params = sorted(extra_params, key=itemgetter(0))            
+            service += urlencode(sorted_params)
         else:
             service += urlencode({REDIRECT_FIELD_NAME: redirect_to})
     return service
@@ -38,13 +53,14 @@ def _redirect_url(request):
     """Redirects to referring page, or CAS_REDIRECT_URL if no referrer is
     set.
     """
-
+    
     next = request.GET.get(REDIRECT_FIELD_NAME)
     if not next:
         if settings.CAS_IGNORE_REFERER:
             next = settings.CAS_REDIRECT_URL
         else:
             next = request.META.get('HTTP_REFERER', settings.CAS_REDIRECT_URL)
+                        
         host = get_host(request)
         prefix = (('http://', 'https://')[request.is_secure()] + host)
         if next.startswith(prefix):
@@ -65,8 +81,8 @@ def _login_url(service, ticket='ST', gateway=False):
     if not ticket:
         ticket = 'ST'
     login = LOGINS.get(ticket[:2],'login')
-    return urlparse.urljoin(settings.CAS_SERVER_URL, login) + '?' + urlencode(params)
 
+    return urlparse.urljoin(settings.CAS_SERVER_URL, login) + '?' + urlencode(params)
 
 def _logout_url(request, next_page=None):
     """Generates CAS logout URL"""
@@ -92,21 +108,26 @@ def login(request, next_page=None, required=False, gateway=False):
         service = _service_url(request, next_page, True)
     else:
         service = _service_url(request, next_page, False)
+
     if ticket:
         from django.contrib import auth
         user = auth.authenticate(ticket=ticket, service=service)
 
         if user is not None:
+            #Has ticket, logs in fine    
             auth.login(request, user)
             if settings.CAS_PROXY_CALLBACK:
                 proxy_callback(request)
+            #keep urls
             return HttpResponseRedirect(next_page)
         elif settings.CAS_RETRY_LOGIN or required:
+            #Has ticket, 
             if gateway:
                 return HttpResponseRedirect(_login_url(service, ticket, True))
             else:
                 return HttpResponseRedirect(_login_url(service, ticket, False))
         else:
+            #Has ticket, not session
             error = "<h1>Forbidden</h1><p>Login failed.</p>"
             return HttpResponseForbidden(error)
     else:
