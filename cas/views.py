@@ -128,8 +128,12 @@ def login(request, next_page=None, required=False, gateway=False):
                 return HttpResponseRedirect(_login_url(service, ticket, False))
         else:
             #Has ticket, not session
-            error = "<h1>Forbidden</h1><p>Login failed.</p>"
-            return HttpResponseForbidden(error)
+            if getattr(settings, 'CAS_CUSTOM_FORBIDDEN', settings.CAS_CUSTOM_FORBIDDEN):
+                from django.core.urlresolvers import reverse
+                return reverse('notamember', kwargs={'classname': classname})
+            else:
+                error = "<h1>Forbidden</h1><p>Login failed.</p>"
+                return HttpResponseForbidden(error)
     else:
         if gateway:
             return HttpResponseRedirect(_login_url(service, ticket, True))
