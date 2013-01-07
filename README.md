@@ -1,8 +1,12 @@
 # django-cas
 
-K-State&#39;s maintained version of django-cas
+CAS client for Django.  This is K-State&#39;s fork of the original, which lives at
+https://bitbucket.org/cpcc/django-cas/overview.  This fork is actively maintaned and 
+includes several new features.
 
-This is a fork of the original which lives here https://bitbucket.org/cpcc/django-cas/overview
+Current version: 0.8.5
+https://github.com/kstateome/django-cas
+
 
 ## Install
 
@@ -87,7 +91,13 @@ Then, add the ``gateway`` decorator to a view:
         #stuff
         return render(request, 'foo/bar.html')
 
-        
+
+## Custom Forbidden Page
+
+To show a custom forbidden page, set ``CAS_CUSTOM_FORBIDDEN`` to a ``path.to.some_view``.  Otherwise,
+a generic ``HttpResponseForbidden`` will be returned.
+
+
 ## Proxy Tickets
 
 This fork also includes Edmund Crewe's proxy ticket patch:
