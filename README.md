@@ -5,6 +5,7 @@ https://bitbucket.org/cpcc/django-cas/overview.  This fork is actively maintaned
 includes several new features.
 
 Current version: 0.8.5
+
 https://github.com/kstateome/django-cas
 
 
