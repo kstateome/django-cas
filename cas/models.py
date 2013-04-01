@@ -39,7 +39,8 @@ class Tgt(models.Model):
             if tree[0].tag.endswith('proxySuccess'):
                 return tree[0][0].text
             else:
-                raise CasTicketException("Failed to get proxy ticket")
+                raise CasTicketException('Failed to get proxy ticket: %s' % \
+                                         tree[0].text.strip())
         finally:
             page.close()
 
