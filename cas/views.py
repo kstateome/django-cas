@@ -74,7 +74,7 @@ def _login_url(service, ticket='ST', gateway=False):
     LOGINS = {'ST':'login',
               'PT':'proxyValidate'}
     if gateway:
-        params = {'service': service, 'gateway':True}
+        params = {'service': service, 'gateway': 'true'}
     else:
         params = {'service': service}
     if settings.CAS_EXTRA_LOGIN_PARAMS:
