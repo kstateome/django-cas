@@ -30,6 +30,7 @@ Add these to ``settings.py`` to use the CAS Backend::
 
     CAS_SERVER_URL = "Your Cas Server"
     CAS_LOGOUT_COMPLETELY = True
+    CAS_PROVIDE_URL_TO_LOGOUT = True
 
 # Additional Features
 
