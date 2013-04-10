@@ -1,8 +1,8 @@
 # django-cas
 
-CAS client for Django.  This is K-State&#39;s fork of the original, which lives at
-https://bitbucket.org/cpcc/django-cas/overview.  This fork is actively maintaned and 
-includes several new features.
+CAS client for Django.  This is forked from
+[K-State&#39;s fork](https://github.com/kstateome/django-cas) of
+[the original](https://bitbucket.org/cpcc/django-cas/overview.).
 
 Current version: 0.8.5
 
@@ -19,11 +19,11 @@ https://bitbucket.org/cpcc/django-cas/overview
 ## Settings.py for CAS
 
 Add the following to middleware if you want to use CAS::
-    
+
     MIDDLEWARE_CLASSES = (
     'cas.middleware.CASMiddleware',
     )
-    
+
 
 Add these to ``settings.py`` to use the CAS Backend::
 
@@ -38,7 +38,7 @@ This fork contains additional features not found in the original:
 *  Proxied Hosts
 *  CAS Response Callbacks
 *  CAS Gateway
-*  Proxy Tickets (From Edmund Crewe) 
+*  Proxy Tickets (From Edmund Crewe)
 
 ## Proxied Hosts
 
@@ -56,7 +56,7 @@ This middleware needs to be added before the django ``common`` middleware.
 ## CAS Response Callbacks
 
 To store data from CAS, create a callback function that accepts the ElementTree object from the
-proxyValidate response. There can be multiple callbacks, and they can live anywhere. Define the 
+proxyValidate response. There can be multiple callbacks, and they can live anywhere. Define the
 callback(s) in ``settings.py``:
 
     CAS_RESPONSE_CALLBACKS = (
@@ -75,7 +75,7 @@ and create the functions in ``path/to/module.py``:
         profile.email = tree[0][1].text
         profile.position = tree[0][2].text
         profile.save()
-        
+
 
 ## CAS Gateway
 
@@ -102,5 +102,5 @@ a generic ``HttpResponseForbidden`` will be returned.
 
 ## Proxy Tickets
 
-This fork also includes Edmund Crewe's proxy ticket patch:
-http://code.google.com/r/edmundcrewe-proxypatch/source/browse/django-cas-proxy.patch
+This fork also includes
+[Edmund Crewe's proxy ticket patch](http://code.google.com/r/edmundcrewe-proxypatch/source/browse/django-cas-proxy.patch).
