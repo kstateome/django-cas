@@ -2,7 +2,9 @@
 
 CAS client for Django.  This is forked from
 [K-State&#39;s fork](https://github.com/kstateome/django-cas) of
-[the original](https://bitbucket.org/cpcc/django-cas/overview.).
+[the original](https://bitbucket.org/cpcc/django-cas/overview.), and includes
+features merged from
+[KTHse&#39;s django-cas2](https://github.com/KTHse/django-cas2).
 
 Current version: 0.8.5
 
