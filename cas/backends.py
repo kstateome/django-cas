@@ -1,14 +1,19 @@
 """CAS authentication backend"""
 
+import logging
 from urllib import urlencode, urlopen
 from urlparse import urljoin
+from xml.dom import minidom
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from cas.exceptions import CasTicketException
 from cas.models import User, Tgt, PgtIOU
 from cas.utils import cas_response_callbacks
 
 __all__ = ['CASBackend']
+
+logger = logging.getLogger(__name__)
 
 def _verify_cas1(ticket, service):
     """Verifies CAS 1.0 authentication ticket.
@@ -41,33 +46,59 @@ def _verify_cas2(ticket, service):
     except ImportError:
         from elementtree import ElementTree
 
+    params = {'ticket': ticket, 'service': service}
     if settings.CAS_PROXY_CALLBACK:
-        params = {'ticket': ticket, 'service': service, 'pgtUrl': settings.CAS_PROXY_CALLBACK}
-    else:
-        params = {'ticket': ticket, 'service': service}
+        params['pgtUrl'] = settings.CAS_PROXY_CALLBACK
 
     url = (urljoin(settings.CAS_SERVER_URL, 'proxyValidate') + '?' +
            urlencode(params))
 
     page = urlopen(url)
+
+    username = None
+
     try:
         response = page.read()
         tree = ElementTree.fromstring(response)
+        document = minidom.parseString(response)
 
         #Useful for debugging
-        #from xml.dom.minidom import parseString
-        #from xml.etree import ElementTree
-        #txt = ElementTree.tostring(tree)
-        #print parseString(txt).toprettyxml()
-        
+        #print document.toprettyxml()
+
         if tree[0].tag.endswith('authenticationSuccess'):
             if settings.CAS_RESPONSE_CALLBACKS:
                 cas_response_callbacks(tree)
-            return tree[0][0].text
+
+            username = tree[0][0].text
+
+            pgt_el = document.getElementsByTagName('cas:proxyGrantingTicket')
+            if pgt_el:
+                pgt = pgt_el[0].firstChild.nodeValue
+                try:
+                    pgtIou = _get_pgtiou(pgt)
+                    tgt = Tgt.objects.get(username=username)
+                    tgt.tgt = pgtIou.tgt
+                    tgt.save()
+                    pgtIou.delete()
+                except Tgt.DoesNotExist:
+                    Tgt.objects.create(username=username, tgt=pgtIou.tgt)
+                    pgtIou.delete()
+                except Exception:
+                    logger.error('Failed to do proxy authentication.')
+
         else:
-            return None
+            failure = document.getElementsByTagName('cas:authenticationFailure')
+            if failure:
+                logger.warn('Authentication failed from CAS server: %s',
+                            failure[0].firstChild.nodeValue)
+
+    except Exception as e:
+        logger.error('Failed to verify CAS authentication', e)
+
     finally:
         page.close()
+
+    return username
 
 
 def verify_proxy_ticket(ticket, service):
@@ -109,6 +140,26 @@ if settings.CAS_VERSION not in _PROTOCOLS:
     raise ValueError('Unsupported CAS_VERSION %r' % settings.CAS_VERSION)
 
 _verify = _PROTOCOLS[settings.CAS_VERSION]
+
+
+def _get_pgtiou(pgt):
+    """ Returns a PgtIOU object given a pgt.
+
+        The PgtIOU (tgt) is set by the CAS server in a different request
+        that has completed before this call, however, it may not be found in
+        the database by this calling thread, hence the attempt to get the
+        ticket is retried for up to 5 seconds. This should be handled some
+        better way.
+    """
+    pgtIou = None
+    retries_left = 5
+    while not pgtIou and retries_left:
+        try:
+            return PgtIOU.objects.get(tgt=pgt)
+        except PgtIOU.DoesNotExist:
+            time.sleep(1)
+            retries_left -= 1
+    raise CasTicketException("Could not find pgtIou for pgt %s" % pgt)
 
 
 class CASBackend(object):
