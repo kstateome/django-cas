@@ -4,7 +4,7 @@ from urllib import urlencode
 import urlparse
 from operator import itemgetter
 
-from django.http import get_host, HttpResponseRedirect, HttpResponseForbidden, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from cas.models import PgtIOU
@@ -12,11 +12,12 @@ from django.contrib import messages
 
 __all__ = ['login', 'logout']
 
+
 def _service_url(request, redirect_to=None, gateway=False):
     """Generates application service URL for CAS"""
 
     protocol = ('http://', 'https://')[request.is_secure()]
-    host = get_host(request)
+    host = request.get_host()
     prefix = (('http://', 'https://')[request.is_secure()] + host)
     service = protocol + host + request.path
     if redirect_to:        
@@ -61,7 +62,7 @@ def _redirect_url(request):
         else:
             next = request.META.get('HTTP_REFERER', settings.CAS_REDIRECT_URL)
                         
-        host = get_host(request)
+        host = request.get_host()
         prefix = (('http://', 'https://')[request.is_secure()] + host)
         if next.startswith(prefix):
             next = next[len(prefix):]
@@ -90,7 +91,7 @@ def _logout_url(request, next_page=None):
     url = urlparse.urljoin(settings.CAS_SERVER_URL, 'logout')
     if next_page:
         protocol = ('http://', 'https://')[request.is_secure()]
-        host = get_host(request)
+        host = request.get_host()
         url += '?' + urlencode({'url': protocol + host + next_page})
     return url
 
@@ -130,7 +131,7 @@ def login(request, next_page=None, required=False, gateway=False):
             #Has ticket, not session
             if getattr(settings, 'CAS_CUSTOM_FORBIDDEN'):
                 from django.core.urlresolvers import reverse
-                return HttpResponseRedirect(reverse(settings.CAS_CUSTOM_FORBIDDEN)+ "?" + request.META['QUERY_STRING'] )
+                return HttpResponseRedirect(reverse(settings.CAS_CUSTOM_FORBIDDEN) + "?" + request.META['QUERY_STRING'])
             else:
                 error = "<h1>Forbidden</h1><p>Login failed.</p>"
                 return HttpResponseForbidden(error)
@@ -167,7 +168,7 @@ def proxy_callback(request):
     if not (pgtIou and tgt):
         return HttpResponse('No pgtIOO', mimetype="text/plain")
     try:
-        PgtIOU.objects.create(tgt = tgt, pgtIou = pgtIou, created = datetime.now())
+        PgtIOU.objects.create(tgt=tgt, pgtIou=pgtIou, created=datetime.now())
         request.session['pgt-TICKET'] = ticket
         return HttpResponse('PGT ticket is: %s' % str(ticket, mimetype="text/plain"))
     except:
