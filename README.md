@@ -1,35 +1,42 @@
 # django-cas
 
-CAS client for Django.  This is K-State&#39;s fork of the original, which lives at
-https://bitbucket.org/cpcc/django-cas/overview.  This fork is actively maintaned and 
-includes several new features.
+CAS client for Django.
 
-Current version: 0.8.5
+Current version: 0.9.0
 
-https://github.com/kstateome/django-cas
+This is [K-State&#39;s fork](https://github.com/kstateome/django-cas) of [the original](https://bitbucket.org/cpcc/django-cas/overview.) and includes [several additional features](https://github.com/kstateome/django-cas/edit/develop/README.md#additional-features) as well as features merged from
+
+*  [KTHse&#39;s django-cas2](https://github.com/KTHse/django-cas2).
+*  [Edmund Crewe's proxy ticket patch](http://code.google.com/r/edmundcrewe-proxypatch/source/browse/django-cas-proxy.patch).
 
 
 ## Install
 
+``pip install git+ssh://git@github.com/kstateome/django-cas.git@0.9.0#egg=cas``
 
 See the document at Bitbucket
 
 https://bitbucket.org/cpcc/django-cas/overview
 
+## How to Contribute
+
+Fork and branch off of the ``develop`` branch.  Submit Pull requests back to ``kstateome:develop``.
+
 ## Settings.py for CAS
 
 Add the following to middleware if you want to use CAS::
-    
+
     MIDDLEWARE_CLASSES = (
     'cas.middleware.CASMiddleware',
     )
-    
+
 
 Add these to ``settings.py`` to use the CAS Backend::
 
 
     CAS_SERVER_URL = "Your Cas Server"
     CAS_LOGOUT_COMPLETELY = True
+    CAS_PROVIDE_URL_TO_LOGOUT = True
 
 # Additional Features
 
@@ -37,7 +44,7 @@ This fork contains additional features not found in the original:
 *  Proxied Hosts
 *  CAS Response Callbacks
 *  CAS Gateway
-*  Proxy Tickets (From Edmund Crewe) 
+*  Proxy Tickets (From Edmund Crewe)
 
 ## Proxied Hosts
 
@@ -55,7 +62,7 @@ This middleware needs to be added before the django ``common`` middleware.
 ## CAS Response Callbacks
 
 To store data from CAS, create a callback function that accepts the ElementTree object from the
-proxyValidate response. There can be multiple callbacks, and they can live anywhere. Define the 
+proxyValidate response. There can be multiple callbacks, and they can live anywhere. Define the
 callback(s) in ``settings.py``:
 
     CAS_RESPONSE_CALLBACKS = (
@@ -74,7 +81,7 @@ and create the functions in ``path/to/module.py``:
         profile.email = tree[0][1].text
         profile.position = tree[0][2].text
         profile.save()
-        
+
 
 ## CAS Gateway
 
@@ -101,5 +108,5 @@ a generic ``HttpResponseForbidden`` will be returned.
 
 ## Proxy Tickets
 
-This fork also includes Edmund Crewe's proxy ticket patch:
-http://code.google.com/r/edmundcrewe-proxypatch/source/browse/django-cas-proxy.patch
+This fork also includes
+[Edmund Crewe's proxy ticket patch](http://code.google.com/r/edmundcrewe-proxypatch/source/browse/django-cas-proxy.patch).
