@@ -74,7 +74,7 @@ def _login_url(service, ticket='ST', gateway=False):
     LOGINS = {'ST':'login',
               'PT':'proxyValidate'}
     if gateway:
-        params = {'service': service, 'gateway':True}
+        params = {'service': service, 'gateway': 'true'}
     else:
         params = {'service': service}
     if settings.CAS_EXTRA_LOGIN_PARAMS:
@@ -89,7 +89,7 @@ def _logout_url(request, next_page=None):
     """Generates CAS logout URL"""
 
     url = urlparse.urljoin(settings.CAS_SERVER_URL, 'logout')
-    if next_page:
+    if next_page and getattr(settings, 'CAS_PROVIDE_URL_TO_LOGOUT', True):
         protocol = ('http://', 'https://')[request.is_secure()]
         host = request.get_host()
         url += '?' + urlencode({'url': protocol + host + next_page})
