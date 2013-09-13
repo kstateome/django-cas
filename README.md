@@ -12,10 +12,15 @@ This is [K-State&#39;s fork](https://github.com/kstateome/django-cas) of [the or
 
 ## Install
 
+``pip install git+ssh://git@github.com/kstateome/django-cas.git@0.9.0#egg=cas``
 
 See the document at Bitbucket
 
 https://bitbucket.org/cpcc/django-cas/overview
+
+## How to Contribute
+
+Fork and branch off of the ``develop`` branch.  Submit Pull requests back to ``kstateome:develop``.
 
 ## Settings.py for CAS
 
