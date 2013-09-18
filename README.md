@@ -2,9 +2,9 @@
 
 CAS client for Django.
 
-Current version: 0.9.0
+Current version: 0.9.1
 
-This is [K-State&#39;s fork](https://github.com/kstateome/django-cas) of [the original](https://bitbucket.org/cpcc/django-cas/overview.) and includes [several additional features](https://github.com/kstateome/django-cas/edit/develop/README.md#additional-features) as well as features merged from
+This is [K-State&#39;s fork](https://github.com/kstateome/django-cas) of [the original](https://bitbucket.org/cpcc/django-cas/overview) and includes [several additional features](https://github.com/kstateome/django-cas/#additional-features) as well as features merged from
 
 *  [KTHse&#39;s django-cas2](https://github.com/KTHse/django-cas2).
 *  [Edmund Crewe's proxy ticket patch](http://code.google.com/r/edmundcrewe-proxypatch/source/browse/django-cas-proxy.patch).
@@ -12,7 +12,7 @@ This is [K-State&#39;s fork](https://github.com/kstateome/django-cas) of [the or
 
 ## Install
 
-``pip install git+ssh://git@github.com/kstateome/django-cas.git@0.9.0#egg=cas``
+``pip install git+ssh://git@github.com/kstateome/django-cas.git@0.9.1#egg=cas``
 
 See the document at Bitbucket
 
