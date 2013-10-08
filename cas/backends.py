@@ -93,7 +93,7 @@ def _verify_cas2(ticket, service):
                             failure[0].firstChild.nodeValue)
 
     except Exception as e:
-        logger.error('Failed to verify CAS authentication', e)
+        logger.error('Failed to verify CAS authentication: %s', e)
 
     finally:
         page.close()
