@@ -1,3 +1,8 @@
+
+import logging
+
+logger = logging.getLogger(__name__)
+
 def cas_response_callbacks(tree):
     from django.conf import settings
     callbacks = []
@@ -8,9 +13,11 @@ def cas_response_callbacks(tree):
         try:
             mod = __import__(module, fromlist=[''])
         except ImportError as e:
-            print "Import Error: %s" % e
+            logger.error("Import Error: %s" % e)
+            raise e
         try:
             func = getattr(mod, callback)
         except AttributeError, e:
-            print "Attribute Error: %s" % e
+            logger.error( "Attribute Error: %s" % e)
+            raise e
         func(tree)
