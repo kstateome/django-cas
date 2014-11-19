@@ -2,12 +2,12 @@ from urlparse import urljoin
 from urllib import urlencode, urlopen
 from django.db import models
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from cas.exceptions import CasTicketException, CasConfigException
 # Ed Crewe - add in signals to delete old tickets
 from django.db.models.signals import post_save
 from datetime import datetime
+
 
 class Tgt(models.Model):
     username = models.CharField(max_length = 255, unique = True)
@@ -60,7 +60,7 @@ def get_tgt_for(user):
         raise CasTicketException("no ticket found for user " + user.username)
 
 def delete_old_tickets(**kwargs):
-    """ Delete tickets if they are over 2 days old 
+    """ Delete tickets if they are over 2 days old
         kwargs = ['raw', 'signal', 'instance', 'sender', 'created']
     """
     sender = kwargs.get('sender', None)
