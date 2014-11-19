@@ -1,7 +1,7 @@
-
 import logging
 
 logger = logging.getLogger(__name__)
+
 
 def cas_response_callbacks(tree):
     from django.conf import settings
