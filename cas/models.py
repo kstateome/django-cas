@@ -1,5 +1,6 @@
 from urlparse import urljoin
 from urllib import urlencode, urlopen
+
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -44,11 +45,13 @@ class Tgt(models.Model):
         finally:
             page.close()
 
+
 class PgtIOU(models.Model):
     """ Proxy granting ticket and IOU """
     pgtIou = models.CharField(max_length = 255, unique = True)
     tgt = models.CharField(max_length = 255)
     created = models.DateTimeField(auto_now = True)
+
 
 def get_tgt_for(user):
     if not settings.CAS_PROXY_CALLBACK:
@@ -58,6 +61,7 @@ def get_tgt_for(user):
         return Tgt.objects.get(username = user.username)
     except ObjectDoesNotExist:
         raise CasTicketException("no ticket found for user " + user.username)
+
 
 def delete_old_tickets(**kwargs):
     """ Delete tickets if they are over 2 days old
@@ -69,4 +73,3 @@ def delete_old_tickets(**kwargs):
     sender.objects.filter(created__lt=expire).delete()
 
 post_save.connect(delete_old_tickets, sender=PgtIOU)
-#post_save.connect(delete_old_tickets, sender=Tgt)

@@ -15,6 +15,7 @@ __all__ = ['CASBackend']
 
 logger = logging.getLogger(__name__)
 
+
 def _verify_cas1(ticket, service):
     """Verifies CAS 1.0 authentication ticket.
 

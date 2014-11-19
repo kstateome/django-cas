@@ -85,6 +85,7 @@ def _login_url(service, ticket='ST', gateway=False):
 
     return urlparse.urljoin(settings.CAS_SERVER_URL, login) + '?' + urlencode(params)
 
+
 def _logout_url(request, next_page=None):
     """Generates CAS logout URL"""
 

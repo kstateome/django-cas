@@ -10,8 +10,11 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.utils.http import urlquote
+from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 
 __all__ = ['login_required', 'permission_required', 'user_passes_test']
+
 
 def user_passes_test(test_func, login_url=None,
                      redirect_field_name=REDIRECT_FIELD_NAME):
@@ -45,9 +48,6 @@ def permission_required(perm, login_url=None):
 
     return user_passes_test(lambda u: u.has_perm(perm), login_url=login_url)
 
-
-from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
 
 def gateway():
     """Authenticates single sign on session if ticket is available,
