@@ -155,6 +155,7 @@ def logout(request, next_page=None):
     else:
         return HttpResponseRedirect(next_page)
 
+
 def proxy_callback(request):
     """Handles CAS 2.0+ XML-based proxy callback call.
     Stores the proxy granting ticket in the database for 
@@ -167,13 +168,11 @@ def proxy_callback(request):
     tgt = request.GET.get('pgtId')
 
     if not (pgtIou and tgt):
-        return HttpResponse('No pgtIOO', mimetype="text/plain")
+        return HttpResponse('No pgtIOO', content_type="text/plain")
     try:
         PgtIOU.objects.create(tgt=tgt, pgtIou=pgtIou, created=datetime.now())
         request.session['pgt-TICKET'] = ticket
-        return HttpResponse('PGT ticket is: %s' % str(ticket, mimetype="text/plain"))
+        return HttpResponse('PGT ticket is: %s' % str(ticket, content_type="text/plain"))
     except:
-        return HttpResponse('PGT storage failed for %s' % str(request.GET), mimetype="text/plain")
-
-    return HttpResponse('Success', mimetype="text/plain")
+        return HttpResponse('PGT storage failed for %s' % str(request.GET), content_type="text/plain")
 
