@@ -1,31 +1,34 @@
+try:
+    from xml.etree import ElementTree
+except ImportError:
+    from elementtree import ElementTree
+
 from urlparse import urljoin
 from urllib import urlencode, urlopen
+from datetime import datetime
 
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from cas.exceptions import CasTicketException, CasConfigException
-# Ed Crewe - add in signals to delete old tickets
 from django.db.models.signals import post_save
-from datetime import datetime
 
 
 class Tgt(models.Model):
-    username = models.CharField(max_length = 255, unique = True)
-    tgt = models.CharField(max_length = 255)
+    username = models.CharField(max_length=255, unique=True)
+    tgt = models.CharField(max_length=255)
 
     def get_proxy_ticket_for(self, service):
-        """Verifies CAS 2.0+ XML-based authentication ticket.
+        """
+        Verifies CAS 2.0+ XML-based authentication ticket.
+
+        :param: service
 
         Returns username on success and None on failure.
         """
+
         if not settings.CAS_PROXY_CALLBACK:
             raise CasConfigException("No proxy callback set in settings")
-
-        try:
-            from xml.etree import ElementTree
-        except ImportError:
-            from elementtree import ElementTree
 
         params = {'pgt': self.tgt, 'targetService': service}
 
@@ -47,13 +50,20 @@ class Tgt(models.Model):
 
 
 class PgtIOU(models.Model):
-    """ Proxy granting ticket and IOU """
+    """
+    Proxy granting ticket and IOU
+    """
     pgtIou = models.CharField(max_length = 255, unique = True)
     tgt = models.CharField(max_length = 255)
     created = models.DateTimeField(auto_now = True)
 
 
 def get_tgt_for(user):
+    """
+
+    :param user:
+    :return:
+    """
     if not settings.CAS_PROXY_CALLBACK:
         raise CasConfigException("No proxy callback set in settings")
 
@@ -64,8 +74,10 @@ def get_tgt_for(user):
 
 
 def delete_old_tickets(**kwargs):
-    """ Delete tickets if they are over 2 days old
-        kwargs = ['raw', 'signal', 'instance', 'sender', 'created']
+    """
+    Delete tickets if they are over 2 days old
+    kwargs = ['raw', 'signal', 'instance', 'sender', 'created']
+
     """
     sender = kwargs.get('sender', None)
     now = datetime.now()

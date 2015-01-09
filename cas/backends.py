@@ -1,9 +1,13 @@
-"""CAS authentication backend"""
+try:
+    from xml.etree import ElementTree
+except ImportError:
+    from elementtree import ElementTree
 
 import logging
 from urllib import urlencode, urlopen
 from urlparse import urljoin
 from xml.dom import minidom
+import time
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -17,7 +21,11 @@ logger = logging.getLogger(__name__)
 
 
 def _verify_cas1(ticket, service):
-    """Verifies CAS 1.0 authentication ticket.
+    """
+    Verifies CAS 1.0 authentication ticket.
+
+    :param: ticket
+    :param: service
 
     Returns username on success and None on failure.
     """
@@ -37,15 +45,14 @@ def _verify_cas1(ticket, service):
 
 
 def _verify_cas2(ticket, service):
-    """Verifies CAS 2.0+ XML-based authentication ticket.
+    """
+    Verifies CAS 2.0+ XML-based authentication ticket.
+
+    :param: ticket
+    :param: service
 
     Returns username on success and None on failure.
     """
-
-    try:
-        from xml.etree import ElementTree
-    except ImportError:
-        from elementtree import ElementTree
 
     params = {'ticket': ticket, 'service': service}
     if settings.CAS_PROXY_CALLBACK:
@@ -103,15 +110,14 @@ def _verify_cas2(ticket, service):
 
 
 def verify_proxy_ticket(ticket, service):
-    """Verifies CAS 2.0+ XML-based proxy ticket.
+    """
+    Verifies CAS 2.0+ XML-based proxy ticket.
+
+    :param: ticket
+    :param: service
 
     Returns username on success and None on failure.
     """
-
-    try:
-        from xml.etree import ElementTree
-    except ImportError:
-        from elementtree import ElementTree
 
     params = {'ticket': ticket, 'service': service}
 
@@ -144,13 +150,17 @@ _verify = _PROTOCOLS[settings.CAS_VERSION]
 
 
 def _get_pgtiou(pgt):
-    """ Returns a PgtIOU object given a pgt.
+    """
+    Returns a PgtIOU object given a pgt.
 
-        The PgtIOU (tgt) is set by the CAS server in a different request
-        that has completed before this call, however, it may not be found in
-        the database by this calling thread, hence the attempt to get the
-        ticket is retried for up to 5 seconds. This should be handled some
-        better way.
+    The PgtIOU (tgt) is set by the CAS server in a different request
+    that has completed before this call, however, it may not be found in
+    the database by this calling thread, hence the attempt to get the
+    ticket is retried for up to 5 seconds. This should be handled some
+    better way.
+
+    :param: pgt
+
     """
     pgtIou = None
     retries_left = 5
@@ -164,19 +174,25 @@ def _get_pgtiou(pgt):
 
 
 class CASBackend(object):
-    """CAS authentication backend"""
+    """
+    CAS authentication backend
+    """
 
     supports_object_permissions = False
     supports_inactive_user = False
 
     def authenticate(self, ticket, service):
-        """Verifies CAS ticket and gets or creates User object
-            NB: Use of PT to identify proxy
         """
+        Verifies CAS ticket and gets or creates User object
+        NB: Use of PT to identify proxy
+        """
+
         User = get_user_model()
         username = _verify(ticket, service)
+
         if not username:
             return None
+
         try:
             user = User.objects.get(username__iexact=username)
         except User.DoesNotExist:
@@ -186,7 +202,9 @@ class CASBackend(object):
         return user
 
     def get_user(self, user_id):
-        """Retrieve the user's entry in the User model if it exists"""
+        """
+        Retrieve the user's entry in the User model if it exists
+        """
 
         User = get_user_model()
         

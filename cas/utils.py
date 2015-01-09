@@ -1,12 +1,15 @@
 import logging
 
+from django.conf import settings
+
+
 logger = logging.getLogger(__name__)
 
 
 def cas_response_callbacks(tree):
-    from django.conf import settings
     callbacks = []
     callbacks.extend(settings.CAS_RESPONSE_CALLBACKS)
+
     for path in callbacks:
         i = path.rfind('.')
         module, callback = path[:i], path[i+1:]
@@ -18,6 +21,6 @@ def cas_response_callbacks(tree):
         try:
             func = getattr(mod, callback)
         except AttributeError, e:
-            logger.error( "Attribute Error: %s" % e)
+            logger.error("Attribute Error: %s" % e)
             raise e
         func(tree)

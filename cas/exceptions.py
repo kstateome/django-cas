@@ -1,9 +1,17 @@
-"CasTicketException, CasConfigException"
 from django.core.exceptions import ValidationError
 
+
 class CasTicketException(ValidationError):
-    """The ticket fails to validate"""
+    """
+    The ticket fails to validate
+    """
+
+    pass
+
 
 class CasConfigException(ValidationError):
-    """The config is wrong"""
+    """
+    The config is wrong
+    """
 
+    pass
