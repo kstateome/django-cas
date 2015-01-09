@@ -1,11 +1,18 @@
+import os
+
 from setuptools import setup, find_packages
 
-version = '0.9.1'
+version = '1.0.0'
+
+
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
 
 setup(name='django-cas',
       version=version,
       description="Django Cas Client",
-      long_description=open("./README.md", "r").read(),
+      long_description=read('README.md'),
       classifiers=[
           "Development Status :: Development",
           "Environment :: Console",
