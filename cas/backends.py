@@ -11,6 +11,7 @@ import time
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+
 from cas.exceptions import CasTicketException
 from cas.models import Tgt, PgtIOU
 from cas.utils import cas_response_callbacks
@@ -34,6 +35,7 @@ def _verify_cas1(ticket, service):
     url = (urljoin(settings.CAS_SERVER_URL, 'validate') + '?' +
            urlencode(params))
     page = urlopen(url)
+
     try:
         verified = page.readline().strip()
         if verified == 'yes':
@@ -70,9 +72,6 @@ def _verify_cas2(ticket, service):
         tree = ElementTree.fromstring(response)
         document = minidom.parseString(response)
 
-        #Useful for debugging
-        #print document.toprettyxml()
-
         if tree[0].tag.endswith('authenticationSuccess'):
             if settings.CAS_RESPONSE_CALLBACKS:
                 cas_response_callbacks(tree)
@@ -80,6 +79,7 @@ def _verify_cas2(ticket, service):
             username = tree[0][0].text
 
             pgt_el = document.getElementsByTagName('cas:proxyGrantingTicket')
+
             if pgt_el:
                 pgt = pgt_el[0].firstChild.nodeValue
                 try:

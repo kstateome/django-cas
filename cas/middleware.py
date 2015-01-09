@@ -58,6 +58,7 @@ class CASMiddleware(object):
                 error = ('<h1>Forbidden</h1><p>You do not have staff '
                          'privileges.</p>')
                 return HttpResponseForbidden(error)
+
         params = urlencode({REDIRECT_FIELD_NAME: request.get_full_path()})
         return HttpResponseRedirect(reverse(cas_login) + '?' + params)
 
