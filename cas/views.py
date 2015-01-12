@@ -21,9 +21,9 @@ def _service_url(request, redirect_to=None, gateway=False):
     """
     Generates application service URL for CAS
 
-    :param: request
-    :param: redirect_to
-    :param: gateway
+    :param: request Request Object
+    :param: redirect_to URL to redriect to
+    :param: gateway Should this be a gatewayed pass through
 
     """
 
@@ -69,7 +69,7 @@ def _redirect_url(request):
     Redirects to referring page, or CAS_REDIRECT_URL if no referrer is
     set.
 
-    :param: reqquest
+    :param: request RequestObj
 
     """
     
@@ -94,9 +94,9 @@ def _login_url(service, ticket='ST', gateway=False):
     """
     Generates CAS login URL
 
-    :param: service
-    :param: ticket
-    :param: gateway
+    :param: service Service URL
+    :param: ticket Ticket
+    :param: gateway Gatewayed
 
     """
 
@@ -122,8 +122,8 @@ def _logout_url(request, next_page=None):
     """
     Generates CAS logout URL
 
-    :param: request
-    :param: next_page
+    :param: request RequestObj
+    :param: next_page Page to redirect after logout.
 
     """
 
@@ -141,9 +141,10 @@ def login(request, next_page=None, required=False, gateway=False):
     """
     Forwards to CAS login URL or verifies CAS ticket
 
-    :param: request
-    :param: next_page
-    :param: gateway
+    :param: request RequestObj
+    :param: next_page Next page to redirect after login
+    :param: required
+    :param: gateway Gatewayed response
 
     """
 
@@ -195,8 +196,8 @@ def logout(request, next_page=None):
     """
     Redirects to CAS logout page
 
-    :param: request
-    :param: next_page
+    :param: request RequestObj
+    :param: next_page Page to redirect to
 
     """
 
@@ -219,6 +220,7 @@ def proxy_callback(request):
     NB: Use created and set it in python in case database
     has issues with setting up the default timestamp value
     """
+
     pgtIou = request.GET.get('pgtIou')
     tgt = request.GET.get('pgtId')
 

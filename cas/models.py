@@ -60,15 +60,17 @@ class PgtIOU(models.Model):
 
 def get_tgt_for(user):
     """
+    Fetch a ticket granting ticket for a given user.
 
-    :param user:
-    :return:
+    :param user: UserObj
+
+    :return: TGT or Exepction
     """
     if not settings.CAS_PROXY_CALLBACK:
         raise CasConfigException("No proxy callback set in settings")
 
     try:
-        return Tgt.objects.get(username = user.username)
+        return Tgt.objects.get(username=user.username)
     except ObjectDoesNotExist:
         raise CasTicketException("no ticket found for user " + user.username)
 
