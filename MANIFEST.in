@@ -1,0 +1,3 @@
+include LICENSE.mit
+include README.md
+recursive-exclude * *.pyc

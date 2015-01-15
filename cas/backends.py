@@ -6,14 +6,15 @@ from urlparse import urljoin
 from xml.dom import minidom
 
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth import get_user_model
 from cas.exceptions import CasTicketException
-from cas.models import User, Tgt, PgtIOU
+from cas.models import Tgt, PgtIOU
 from cas.utils import cas_response_callbacks
 
 __all__ = ['CASBackend']
 
 logger = logging.getLogger(__name__)
+
 
 def _verify_cas1(ticket, service):
     """Verifies CAS 1.0 authentication ticket.
@@ -93,7 +94,7 @@ def _verify_cas2(ticket, service):
                             failure[0].firstChild.nodeValue)
 
     except Exception as e:
-        logger.error('Failed to verify CAS authentication', e)
+        logger.error('Failed to verify CAS authentication: %s', e)
 
     finally:
         page.close()
@@ -172,7 +173,7 @@ class CASBackend(object):
         """Verifies CAS ticket and gets or creates User object
             NB: Use of PT to identify proxy
         """
-
+        User = get_user_model()
         username = _verify(ticket, service)
         if not username:
             return None
@@ -187,6 +188,8 @@ class CASBackend(object):
     def get_user(self, user_id):
         """Retrieve the user's entry in the User model if it exists"""
 
+        User = get_user_model()
+        
         try:
             return User.objects.get(pk=user_id)
         except User.DoesNotExist:
