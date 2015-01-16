@@ -16,10 +16,10 @@ _DEFAULTS = {
     'CAS_GATEWAY': False,
     'CAS_PROXY_CALLBACK': None,
     'CAS_RESPONSE_CALLBACKS': None,
-    'CAS_CUSTOM_FORBIDDEN':None
+    'CAS_CUSTOM_FORBIDDEN': None,
 }
 
-for key, value in _DEFAULTS.iteritems():
+for key, value in _DEFAULTS.items():
     try:
         getattr(settings, key)
     except AttributeError:
