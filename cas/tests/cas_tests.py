@@ -1,10 +1,10 @@
 # Shell python script to test a live SSO set up - Ed Crewe 26 Nov 2010
 # It can be really fiddly testing out SSO proxy auth via typing in URLs etc
-# see Dave Spencer's guide at https://wiki.jasig.org/display/CAS/Proxy+CAS+Walkthrough 
+# see Dave Spencer's guide at https://wiki.jasig.org/display/CAS/Proxy+CAS+Walkthrough
 # This does script does it for you against the deployed servers
 
 # Run via python 2.4 or above ...
-# python cas_tests.py [username]  
+# python cas_tests.py [username]
 # You will need to edit the constants below to match your setup ...
 
 import unittest
@@ -12,8 +12,14 @@ import sys
 import commands
 import getpass
 import urllib2
-import urllib
-from urlparse import urljoin
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
+try:
+    from urlparse import urljoin
+except ImportError:
+    from urllib.parse import urljoin
 import cookielib
 from xml.dom import minidom
 
@@ -50,15 +56,15 @@ class TestCAS(unittest.TestCase):
         self.get_auth()
         self.set_url('cas', CAS_SERVER_URL)
         self.set_url('app', APP_URL)
-        self.set_url('proxy', PROXY_URL)        
+        self.set_url('proxy', PROXY_URL)
 
     def set_url(self, name, url):
         """ Make sure valid url with query string appended """
         for end in ['/','.html','.htm']:
             if url.endswith(end):
-                self.urls[name] = url              
+                self.urls[name] = url
                 return
-        self.urls[name] = '%s/' % url  
+        self.urls[name] = '%s/' % url
 
     def test_cas(self):
         """ Test ordinary and proxy CAS login
@@ -66,10 +72,10 @@ class TestCAS(unittest.TestCase):
             are required to be passed between tests
         """
         print 'Testing with following URLs'
-        print '---------------------------'        
+        print '---------------------------'
         print 'CAS server = %s' % self.urls['cas']
         print 'Application server = %s' % self.urls['app']
-        print 'Proxy CAS server = %s' % self.urls['proxy']        
+        print 'Proxy CAS server = %s' % self.urls['proxy']
         print ''
         print 'Test ordinary CAS login'
         print '-----------------------'
@@ -101,15 +107,15 @@ class TestCAS(unittest.TestCase):
 
         # NB: Dont logout proxy app, but test proxy auth with new openers
         # for the tests to be valid...
-        
+
         print ''
         print 'Test SSO server login with proxy ticket'
         print '---------------------------------------'
         proxy = self.proxy4_login(pt)
         if proxy:
-            print 'PASS: Got Success response for app %s using proxy %s' % (self.urls['app'], proxy) 
+            print 'PASS: Got Success response for app %s using proxy %s' % (self.urls['app'], proxy)
         else:
-            print 'FAIL: The proxy login to %s via %s has failed' % (self.urls['app'], self.urls['proxy']) 
+            print 'FAIL: The proxy login to %s via %s has failed' % (self.urls['app'], self.urls['proxy'])
 
         print ''
         print 'Test direct proxy login'
@@ -118,15 +124,15 @@ class TestCAS(unittest.TestCase):
         self.proxy5_login(new_pt)
         return
 
-        
+
     def get_auth(self):
         """ Get authentication by passing to this script on the command line """
         if len(sys.argv) > 1:
             self.auth['username'] = sys.argv[1]
         else:
             self.auth['username'] = getpass.getuser()
-        self.auth['password'] = getpass.getpass('CAS Password for user %s:' % AUTH['username'])        
-        return 
+        self.auth['password'] = getpass.getpass('CAS Password for user %s:' % AUTH['username'])
+        return
 
     def get_token(self, url=None, token=TOKEN, page=''):
         """ Get CSRF token """
@@ -174,7 +180,7 @@ class TestCAS(unittest.TestCase):
             else:
                 return "FAIL: Couldnt find '%s' in page" % part
             pagepart = pagepart[start:]
-        start = start + len(part) 
+        start = start + len(part)
         end = page[start:].find(stop)
         if end == -1:
             end = len(page[start:])
@@ -184,7 +190,7 @@ class TestCAS(unittest.TestCase):
 
     def login(self):
         """ Login to CAS server """
-        url = '%slogin?service=%s' % (self.urls['cas'], self.urls['app'])    
+        url = '%slogin?service=%s' % (self.urls['cas'], self.urls['app'])
         ticket = ''
         token = self.get_token(url)
         if token:
@@ -197,16 +203,16 @@ class TestCAS(unittest.TestCase):
             print 'FAIL: CSRF Token could not be found on page'
             return ticket
         self.auth['service'] = self.urls['app']
-        data = urllib.urlencode(self.auth)
+        data = urlencode(self.auth)
         sso_resp = self.opener.open(url, data)
         sso_page = sso_resp.read()
         found = sso_page.find(CAS_SUCCESS) > -1
-        sso_resp.close()    
+        sso_resp.close()
         if found:
             ticket = self.get_ticket(sso_page, self.urls['app'])
-            print 'PASS: CAS logged in to %s' % url 
+            print 'PASS: CAS logged in to %s' % url
         else:
-            print 'FAIL: Couldnt login to %s' % url 
+            print 'FAIL: Couldnt login to %s' % url
         return ticket
 
     def logout(self):
@@ -275,7 +281,7 @@ class TestCAS(unittest.TestCase):
         """ Dig out the proxy granting ticket using shell script so this test class
             is independent of CAS implementation - eg. can substitute this function
             to get proxy ticket from Java CAS instead of django-cas for example
-        
+
             For a django-cas implementation this can be read from the ORM
             by calling the django shell environment
         """
