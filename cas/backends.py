@@ -37,7 +37,15 @@ def _verify_cas1(ticket, service):
 
 
 def _verify_cas2(ticket, service):
-    """Verifies CAS 2.0+ XML-based authentication ticket.
+    return _internal_verify_cas(ticket, service, 'proxyValidate')
+
+
+def _verify_cas3(ticket, service):
+    return _internal_verify_cas(ticket, service, 'p3/proxyValidate')
+
+
+def _internal_verify_cas(ticket, service, suffix):
+    """Verifies CAS 2.0 and 3.0 XML-based authentication ticket.
 
     Returns username on success and None on failure.
     """
@@ -51,7 +59,7 @@ def _verify_cas2(ticket, service):
     if settings.CAS_PROXY_CALLBACK:
         params['pgtUrl'] = settings.CAS_PROXY_CALLBACK
 
-    url = (urljoin(settings.CAS_SERVER_URL, 'proxyValidate') + '?' +
+    url = (urljoin(settings.CAS_SERVER_URL, suffix) + '?' +
            urlencode(params))
 
     page = urlopen(url)
@@ -135,7 +143,7 @@ def verify_proxy_ticket(ticket, service):
     finally:
         page.close()
 
-_PROTOCOLS = {'1': _verify_cas1, '2': _verify_cas2}
+_PROTOCOLS = {'1': _verify_cas1, '2': _verify_cas2, '3': _verify_cas3}
 
 if settings.CAS_VERSION not in _PROTOCOLS:
     raise ValueError('Unsupported CAS_VERSION %r' % settings.CAS_VERSION)
