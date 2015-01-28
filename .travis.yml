@@ -12,6 +12,7 @@ env:
 # command to install dependencies
 install:
   - pip install $DJANGO_VERSION
+  - pip install -r requirements-dev.txt
 
 # command to run tests
 
