@@ -21,7 +21,9 @@ if django.VERSION[1] < 4:
                                        'django.contrib.contenttypes',
                                        'django.contrib.sessions',
                                        'django.contrib.admin',
-                                       'cas',))
+                                       'cas',),
+                       CAS_SERVER_URL = 'http://signin.cas.com',
+                       )
 else:
     settings.configure(DEBUG=True,
                        DATABASES={
@@ -35,7 +37,8 @@ else:
                                        'django.contrib.sessions',
                                        'django.contrib.admin',
                                        'cas',),
-                       USE_TZ=True)
+                       USE_TZ=True,
+                       CAS_SERVER_URL = 'http://signin.cas.com',)
 
 
 try:
