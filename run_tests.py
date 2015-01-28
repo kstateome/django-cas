@@ -16,7 +16,7 @@ if django.VERSION[1] < 4:
                                'ENGINE': 'django.db.backends.sqlite3',
                                }
                        },
-                       ROOT_URLCONF='mailqueue.urls',
+                       #ROOT_URLCONF='mailqueue.urls',
                        INSTALLED_APPS=('django.contrib.auth',
                                        'django.contrib.contenttypes',
                                        'django.contrib.sessions',
@@ -29,7 +29,7 @@ else:
                                'ENGINE': 'django.db.backends.sqlite3',
                                }
                        },
-                       ROOT_URLCONF='mailqueue.urls',
+                       #ROOT_URLCONF='mailqueue.urls',
                        INSTALLED_APPS=('django.contrib.auth',
                                        'django.contrib.contenttypes',
                                        'django.contrib.sessions',
@@ -43,3 +43,9 @@ try:
     django.setup()
 except AttributeError:
     pass
+
+from django.test.simple import DjangoTestSuiteRunner
+test_runner = DjangoTestSuiteRunner(verbosity=1)
+failures = test_runner.run_tests(['cas', ])
+if failures:
+    sys.exit(failures)
