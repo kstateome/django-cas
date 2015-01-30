@@ -3,7 +3,11 @@ try:
 except ImportError:
     from django.utils.functional import wraps
 
-from urllib import urlencode
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
+
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, HttpResponseRedirect
@@ -61,7 +65,7 @@ def gateway():
 
             from cas.views import login
             request = args[0]
-            
+
             if request.user.is_authenticated():
                 #Is Authed, fine
                 pass
@@ -79,7 +83,7 @@ def gateway():
                     else:
                         #Not Authed, try to authenticate
                         return login(request, path_with_params, False, True)
-                
+
             return func(*args)
         return wrapped_f
     return wrap

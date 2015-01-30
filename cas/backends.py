@@ -1,13 +1,25 @@
+import logging
+from xml.dom import minidom
+import time
+
 try:
     from xml.etree import ElementTree
 except ImportError:
     from elementtree import ElementTree
 
-import logging
-from urllib import urlencode, urlopen
-from urlparse import urljoin
-from xml.dom import minidom
-import time
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
+try:
+    from urllib import urlopen
+except ImportError:
+    from urllib.request import urlopen
+try:
+    from urlparse import urljoin
+except ImportError:
+    from urllib.parse import urljoin
+
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -52,6 +64,16 @@ def _verify_cas2(ticket, service):
 
     :param: ticket
     :param: service
+    """
+    return _internal_verify_cas(ticket, service, 'proxyValidate')
+
+
+def _verify_cas3(ticket, service):
+    return _internal_verify_cas(ticket, service, 'p3/proxyValidate')
+
+
+def _internal_verify_cas(ticket, service, suffix):
+    """Verifies CAS 2.0 and 3.0 XML-based authentication ticket.
 
     Returns username on success and None on failure.
     """
@@ -60,7 +82,7 @@ def _verify_cas2(ticket, service):
     if settings.CAS_PROXY_CALLBACK:
         params['pgtUrl'] = settings.CAS_PROXY_CALLBACK
 
-    url = (urljoin(settings.CAS_SERVER_URL, 'proxyValidate') + '?' +
+    url = (urljoin(settings.CAS_SERVER_URL, suffix) + '?' +
            urlencode(params))
 
     page = urlopen(url)
@@ -141,7 +163,7 @@ def verify_proxy_ticket(ticket, service):
     finally:
         page.close()
 
-_PROTOCOLS = {'1': _verify_cas1, '2': _verify_cas2}
+_PROTOCOLS = {'1': _verify_cas1, '2': _verify_cas2, '3': _verify_cas3}
 
 if settings.CAS_VERSION not in _PROTOCOLS:
     raise ValueError('Unsupported CAS_VERSION %r' % settings.CAS_VERSION)
@@ -207,7 +229,7 @@ class CASBackend(object):
         """
 
         User = get_user_model()
-        
+
         try:
             return User.objects.get(pk=user_id)
         except User.DoesNotExist:

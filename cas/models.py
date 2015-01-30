@@ -1,17 +1,28 @@
+from datetime import datetime
 try:
     from xml.etree import ElementTree
 except ImportError:
     from elementtree import ElementTree
-
-from urlparse import urljoin
-from urllib import urlencode, urlopen
-from datetime import datetime
+try:
+    from urlparse import urljoin
+except ImportError:
+    from urllib.parse import urljoin
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
+try:
+    from urllib import urlopen
+except ImportError:
+    from urllib.request import urlopen
 
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from cas.exceptions import CasTicketException, CasConfigException
 from django.db.models.signals import post_save
+
+
+from cas.exceptions import CasTicketException, CasConfigException
 
 
 class Tgt(models.Model):

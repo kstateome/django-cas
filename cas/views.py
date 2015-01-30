@@ -1,7 +1,15 @@
 import logging
 import datetime
-from urllib import urlencode
-import urlparse
+
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
+try:
+    import urlparse
+except ImportError:
+    import urllib.parse as urlparse
+
 from operator import itemgetter
 
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
@@ -30,7 +38,6 @@ def _service_url(request, redirect_to=None, gateway=False):
     protocol = ('http://', 'https://')[request.is_secure()]
     host = request.get_host()
     service = protocol + host + request.path
-
     if redirect_to:
         if '?' in service:
             service += '&'
@@ -54,9 +61,10 @@ def _service_url(request, redirect_to=None, gateway=False):
                     if item[0] == item2[0]:
                         gateway_params.pop(index)
             extra_params = gateway_params + query_list
-            
-            # Sort params by key name so they are always in the same order.
-            sorted_params = sorted(extra_params, key=itemgetter(0))            
+
+            #Sort params by key name so they are always in the same order.
+            sorted_params = sorted(extra_params, key=itemgetter(0))
+
             service += urlencode(sorted_params)
         else:
             service += urlencode({REDIRECT_FIELD_NAME: redirect_to})
@@ -72,7 +80,7 @@ def _redirect_url(request):
     :param: request RequestObj
 
     """
-    
+
     next = request.GET.get(REDIRECT_FIELD_NAME)
 
     if not next:
@@ -80,7 +88,7 @@ def _redirect_url(request):
             next = settings.CAS_REDIRECT_URL
         else:
             next = request.META.get('HTTP_REFERER', settings.CAS_REDIRECT_URL)
-                        
+
         host = request.get_host()
         prefix = (('http://', 'https://')[request.is_secure()] + host)
 
@@ -165,6 +173,7 @@ def login(request, next_page=None, required=False, gateway=False):
         user = auth.authenticate(ticket=ticket, service=service)
 
         if user is not None:
+
             auth.login(request, user)
 
             if settings.CAS_PROXY_CALLBACK:
@@ -172,7 +181,6 @@ def login(request, next_page=None, required=False, gateway=False):
 
             return HttpResponseRedirect(next_page)
         elif settings.CAS_RETRY_LOGIN or required:
-            # Has ticket,
             if gateway:
                 return HttpResponseRedirect(_login_url(service, ticket, True))
             else:
@@ -214,9 +222,9 @@ def logout(request, next_page=None):
 
 def proxy_callback(request):
     """Handles CAS 2.0+ XML-based proxy callback call.
-    Stores the proxy granting ticket in the database for 
+    Stores the proxy granting ticket in the database for
     future use.
-    
+
     NB: Use created and set it in python in case database
     has issues with setting up the default timestamp value
     """
