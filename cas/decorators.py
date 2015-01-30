@@ -1,5 +1,3 @@
-"""Replacement authentication decorators that work around redirection loops"""
-
 try:
     from functools import wraps
 except ImportError:
@@ -20,14 +18,13 @@ from django.core.exceptions import ImproperlyConfigured
 __all__ = ['login_required', 'permission_required', 'user_passes_test']
 
 
-def user_passes_test(test_func, login_url=None,
-                     redirect_field_name=REDIRECT_FIELD_NAME):
-    """Replacement for django.contrib.auth.decorators.user_passes_test that
+def user_passes_test(test_func, login_url=None, redirect_field_name=REDIRECT_FIELD_NAME):
+    """
+    Replacement for django.contrib.auth.decorators.user_passes_test that
     returns 403 Forbidden if the user is already logged in.
     """
 
     if not login_url:
-        from django.conf import settings
         login_url = settings.LOGIN_URL
 
     def decorator(view_func):
@@ -46,7 +43,8 @@ def user_passes_test(test_func, login_url=None,
 
 
 def permission_required(perm, login_url=None):
-    """Replacement for django.contrib.auth.decorators.permission_required that
+    """
+    Replacement for django.contrib.auth.decorators.permission_required that
     returns 403 Forbidden if the user is already logged in.
     """
 
@@ -54,11 +52,14 @@ def permission_required(perm, login_url=None):
 
 
 def gateway():
-    """Authenticates single sign on session if ticket is available,
+    """
+    Authenticates single sign on session if ticket is available,
     but doesn't redirect to sign in url otherwise.
     """
+
     if settings.CAS_GATEWAY == False:
         raise ImproperlyConfigured('CAS_GATEWAY must be set to True')
+
     def wrap(func):
         def wrapped_f(*args):
 
