@@ -1,5 +1,15 @@
-from urlparse import urljoin
-from urllib import urlencode, urlopen
+try:
+    from urlparse import urljoin
+except ImportError:
+    from urllib.parse import urljoin
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
+try:
+    from urllib import urlopen
+except ImportError:
+    from urllib.request import urlopen
 
 from django.db import models
 from django.conf import settings

@@ -1,8 +1,18 @@
 """CAS authentication backend"""
 
 import logging
-from urllib import urlencode, urlopen
-from urlparse import urljoin
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
+try:
+    from urllib import urlopen
+except ImportError:
+    from urllib.request import urlopen
+try:
+    from urlparse import urljoin
+except ImportError:
+    from urllib.parse import urljoin
 from xml.dom import minidom
 
 from django.conf import settings
@@ -189,7 +199,7 @@ class CASBackend(object):
         """Retrieve the user's entry in the User model if it exists"""
 
         User = get_user_model()
-        
+
         try:
             return User.objects.get(pk=user_id)
         except User.DoesNotExist:

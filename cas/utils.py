@@ -17,7 +17,7 @@ def cas_response_callbacks(tree):
             raise e
         try:
             func = getattr(mod, callback)
-        except AttributeError, e:
-            logger.error( "Attribute Error: %s" % e)
+        except AttributeError as e:
+            logger.error("Attribute Error: %s" % e)
             raise e
         func(tree)
