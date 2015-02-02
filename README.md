@@ -12,11 +12,10 @@ This is [K-State&#39;s fork](https://github.com/kstateome/django-cas) of [the or
 
 ## Install
 
-``pip install git+ssh://git@github.com/kstateome/django-cas.git@1.0.0#egg=cas``
+This project is registered on PyPi as django-cas-client.  To install::
 
-See the document at Bitbucket
+    ```pipi install django-cas-client==1.0.0```
 
-https://bitbucket.org/cpcc/django-cas/overview
 
 ## How to Contribute
 
