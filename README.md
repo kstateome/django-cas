@@ -15,11 +15,20 @@ This is [K-State&#39;s fork](https://github.com/kstateome/django-cas) of [the or
 This project is registered on PyPi as django-cas-client.  To install::
 
     pip install django-cas-client==1.0.0
+    
 
 
 ## How to Contribute
 
 Fork and branch off of the ``develop`` branch.  Submit Pull requests back to ``kstateome:develop``.
+
+### Run The Tests
+
+All PRs must pass unit tests.  To run the tests locally:
+
+    pip install -r requirements-dev.txt
+    python run_tests.py
+
 
 ## Settings.py for CAS
 
