@@ -1,12 +1,29 @@
-"""CAS authentication backend"""
-
 import logging
-from urllib import urlencode, urlopen
-from urlparse import urljoin
 from xml.dom import minidom
+import time
+
+try:
+    from xml.etree import ElementTree
+except ImportError:
+    from elementtree import ElementTree
+
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
+try:
+    from urllib import urlopen
+except ImportError:
+    from urllib.request import urlopen
+try:
+    from urlparse import urljoin
+except ImportError:
+    from urllib.parse import urljoin
+
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+
 from cas.exceptions import CasTicketException
 from cas.models import Tgt, PgtIOU
 from cas.utils import cas_response_callbacks
@@ -17,7 +34,11 @@ logger = logging.getLogger(__name__)
 
 
 def _verify_cas1(ticket, service):
-    """Verifies CAS 1.0 authentication ticket.
+    """
+    Verifies CAS 1.0 authentication ticket.
+
+    :param: ticket
+    :param: service
 
     Returns username on success and None on failure.
     """
@@ -26,6 +47,7 @@ def _verify_cas1(ticket, service):
     url = (urljoin(settings.CAS_SERVER_URL, 'validate') + '?' +
            urlencode(params))
     page = urlopen(url)
+
     try:
         verified = page.readline().strip()
         if verified == 'yes':
@@ -37,21 +59,30 @@ def _verify_cas1(ticket, service):
 
 
 def _verify_cas2(ticket, service):
-    """Verifies CAS 2.0+ XML-based authentication ticket.
+    """
+    Verifies CAS 2.0+ XML-based authentication ticket.
+
+    :param: ticket
+    :param: service
+    """
+    return _internal_verify_cas(ticket, service, 'proxyValidate')
+
+
+def _verify_cas3(ticket, service):
+    return _internal_verify_cas(ticket, service, 'p3/proxyValidate')
+
+
+def _internal_verify_cas(ticket, service, suffix):
+    """Verifies CAS 2.0 and 3.0 XML-based authentication ticket.
 
     Returns username on success and None on failure.
     """
-
-    try:
-        from xml.etree import ElementTree
-    except ImportError:
-        from elementtree import ElementTree
 
     params = {'ticket': ticket, 'service': service}
     if settings.CAS_PROXY_CALLBACK:
         params['pgtUrl'] = settings.CAS_PROXY_CALLBACK
 
-    url = (urljoin(settings.CAS_SERVER_URL, 'proxyValidate') + '?' +
+    url = (urljoin(settings.CAS_SERVER_URL, suffix) + '?' +
            urlencode(params))
 
     page = urlopen(url)
@@ -63,9 +94,6 @@ def _verify_cas2(ticket, service):
         tree = ElementTree.fromstring(response)
         document = minidom.parseString(response)
 
-        #Useful for debugging
-        #print document.toprettyxml()
-
         if tree[0].tag.endswith('authenticationSuccess'):
             if settings.CAS_RESPONSE_CALLBACKS:
                 cas_response_callbacks(tree)
@@ -73,6 +101,7 @@ def _verify_cas2(ticket, service):
             username = tree[0][0].text
 
             pgt_el = document.getElementsByTagName('cas:proxyGrantingTicket')
+
             if pgt_el:
                 pgt = pgt_el[0].firstChild.nodeValue
                 try:
@@ -103,15 +132,14 @@ def _verify_cas2(ticket, service):
 
 
 def verify_proxy_ticket(ticket, service):
-    """Verifies CAS 2.0+ XML-based proxy ticket.
+    """
+    Verifies CAS 2.0+ XML-based proxy ticket.
+
+    :param: ticket
+    :param: service
 
     Returns username on success and None on failure.
     """
-
-    try:
-        from xml.etree import ElementTree
-    except ImportError:
-        from elementtree import ElementTree
 
     params = {'ticket': ticket, 'service': service}
 
@@ -135,7 +163,7 @@ def verify_proxy_ticket(ticket, service):
     finally:
         page.close()
 
-_PROTOCOLS = {'1': _verify_cas1, '2': _verify_cas2}
+_PROTOCOLS = {'1': _verify_cas1, '2': _verify_cas2, '3': _verify_cas3}
 
 if settings.CAS_VERSION not in _PROTOCOLS:
     raise ValueError('Unsupported CAS_VERSION %r' % settings.CAS_VERSION)
@@ -144,13 +172,17 @@ _verify = _PROTOCOLS[settings.CAS_VERSION]
 
 
 def _get_pgtiou(pgt):
-    """ Returns a PgtIOU object given a pgt.
+    """
+    Returns a PgtIOU object given a pgt.
 
-        The PgtIOU (tgt) is set by the CAS server in a different request
-        that has completed before this call, however, it may not be found in
-        the database by this calling thread, hence the attempt to get the
-        ticket is retried for up to 5 seconds. This should be handled some
-        better way.
+    The PgtIOU (tgt) is set by the CAS server in a different request
+    that has completed before this call, however, it may not be found in
+    the database by this calling thread, hence the attempt to get the
+    ticket is retried for up to 5 seconds. This should be handled some
+    better way.
+
+    :param: pgt
+
     """
     pgtIou = None
     retries_left = 5
@@ -164,19 +196,25 @@ def _get_pgtiou(pgt):
 
 
 class CASBackend(object):
-    """CAS authentication backend"""
+    """
+    CAS authentication backend
+    """
 
     supports_object_permissions = False
     supports_inactive_user = False
 
     def authenticate(self, ticket, service):
-        """Verifies CAS ticket and gets or creates User object
-            NB: Use of PT to identify proxy
         """
+        Verifies CAS ticket and gets or creates User object
+        NB: Use of PT to identify proxy
+        """
+
         User = get_user_model()
         username = _verify(ticket, service)
+
         if not username:
             return None
+
         try:
             user = User.objects.get(username__iexact=username)
         except User.DoesNotExist:
@@ -186,10 +224,12 @@ class CASBackend(object):
         return user
 
     def get_user(self, user_id):
-        """Retrieve the user's entry in the User model if it exists"""
+        """
+        Retrieve the user's entry in the User model if it exists
+        """
 
         User = get_user_model()
-        
+
         try:
             return User.objects.get(pk=user_id)
         except User.DoesNotExist:

@@ -1,6 +1,6 @@
 # django-cas
 
-CAS client for Django.
+CAS client for Django.  This library requires Django 1.5 or above, and Python 2.6, 2.7.  Python 3 support is coming soon.
 
 Current version: 1.0.0
 
@@ -12,15 +12,41 @@ This is [K-State&#39;s fork](https://github.com/kstateome/django-cas) of [the or
 
 ## Install
 
-``pip install git+ssh://git@github.com/kstateome/django-cas.git@1.0.0#egg=cas``
+This project is registered on PyPi as django-cas-client.  To install::
 
-See the document at Bitbucket
+    pip install django-cas-client==1.0.0
+    
+    
+### Add to URLs
 
-https://bitbucket.org/cpcc/django-cas/overview
+Add the login and logout patterns to your main URLS conf.
+
+    # CAS
+    url(r'^accounts/login/$', 'cas.views.login', name='login'),
+    url(r'^accounts/logout/$', 'cas.views.logout', name='logout'),
+
+### Add middleware and settings
+
+Set your CAS server URL
+
+    CAS_SERVER_URL = "https://signin.somehwere/cas/"
+
+Add cas to middleware classes
+
+    'cas.middleware.CASMiddleware',
+    
 
 ## How to Contribute
 
 Fork and branch off of the ``develop`` branch.  Submit Pull requests back to ``kstateome:develop``.
+
+### Run The Tests
+
+All PRs must pass unit tests.  To run the tests locally:
+
+    pip install -r requirements-dev.txt
+    python run_tests.py
+
 
 ## Settings.py for CAS
 

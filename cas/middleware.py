@@ -1,6 +1,9 @@
 """CAS authentication middleware"""
 
-from urllib import urlencode
+try:
+    from urllib import urlencode
+except ImportError:
+    from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
@@ -17,10 +20,17 @@ __all__ = ['CASMiddleware']
 
 
 class CASMiddleware(object):
-    """Middleware that allows CAS authentication on admin pages"""
+    """
+    Middleware that allows CAS authentication on admin pages
+    """
 
     def process_request(self, request):
-        """Checks that the authentication middleware is installed"""
+        """
+        Checks that the authentication middleware is installed
+
+        :param: request
+
+        """
 
         error = ("The Django CAS middleware requires authentication "
                  "middleware to be installed. Edit your MIDDLEWARE_CLASSES "
@@ -29,7 +39,8 @@ class CASMiddleware(object):
         assert hasattr(request, 'user'), error
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-        """Forwards unauthenticated requests to the admin page to the CAS
+        """
+        Forwards unauthenticated requests to the admin page to the CAS
         login URL, as well as calls to django.contrib.auth.views.login and
         logout.
         """
@@ -52,12 +63,16 @@ class CASMiddleware(object):
                 error = ('<h1>Forbidden</h1><p>You do not have staff '
                          'privileges.</p>')
                 return HttpResponseForbidden(error)
+
         params = urlencode({REDIRECT_FIELD_NAME: request.get_full_path()})
         return HttpResponseRedirect(reverse(cas_login) + '?' + params)
 
     def process_exception(self, request, exception):
-        """When we get a CasTicketException, that is probably caused by the ticket timing out.
-        So logout/login and get the same page again."""
+        """
+        When we get a CasTicketException, that is probably caused by the ticket timing out.
+        So logout/login and get the same page again.
+        """
+
         if isinstance(exception, CasTicketException):
             do_logout(request)
             # This assumes that request.path requires authentication.
