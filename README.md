@@ -16,7 +16,25 @@ This project is registered on PyPi as django-cas-client.  To install::
 
     pip install django-cas-client==1.0.0
     
+    
+### Add to URLs
 
+Add the login and logout patterns to your main URLS conf.
+
+    # CAS
+    url(r'^accounts/login/$', 'cas.views.login', name='login'),
+    url(r'^accounts/logout/$', 'cas.views.logout', name='logout'),
+
+### Add middleware and settings
+
+Set your CAS server URL
+
+    CAS_SERVER_URL = "https://signin.somehwere/cas/"
+
+Add cas to middleware classes
+
+    'cas.middleware.CASMiddleware',
+    
 
 ## How to Contribute
 
