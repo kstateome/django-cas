@@ -38,10 +38,10 @@ Add cas to middleware classes
 
 ### Add authentication backends 
 
-AUTHENTICATION_BACKENDS = (
-    ‘django.contrib.auth.backends.ModelBackend’,
-    ‘cas.backends.CASBackend’,
-)
+    AUTHENTICATION_BACKENDS = (
+        'django.contrib.auth.backends.ModelBackend',
+        'cas.backends.CASBackend',
+    )
 
 ## How to Contribute
 
