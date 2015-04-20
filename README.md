@@ -36,6 +36,13 @@ Add cas to middleware classes
     'cas.middleware.CASMiddleware',
     
 
+### Add authentication backends 
+
+AUTHENTICATION_BACKENDS = (
+    ‘django.contrib.auth.backends.ModelBackend’,
+    ‘cas.backends.CASBackend’,
+)
+
 ## How to Contribute
 
 Fork and branch off of the ``develop`` branch.  Submit Pull requests back to ``kstateome:develop``.
