@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 try:
     from xml.etree import ElementTree
@@ -23,6 +24,9 @@ from django.db.models.signals import post_save
 
 
 from cas.exceptions import CasTicketException, CasConfigException
+
+
+logger = logging.getLogger(__name__)
 
 
 class Tgt(models.Model):
@@ -54,6 +58,7 @@ class Tgt(models.Model):
             if tree[0].tag.endswith('proxySuccess'):
                 return tree[0][0].text
             else:
+                logger.warning('Failed to get proxy ticket')
                 raise CasTicketException('Failed to get proxy ticket: %s' % \
                                          tree[0].text.strip())
         finally:
@@ -83,6 +88,9 @@ def get_tgt_for(user):
     try:
         return Tgt.objects.get(username=user.username)
     except ObjectDoesNotExist:
+        logger.warning('No ticket found for user {user}'.format(
+            user=user.username
+        ))
         raise CasTicketException("no ticket found for user " + user.username)
 
 
