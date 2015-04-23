@@ -9,13 +9,12 @@ except ImportError:
     from urllib.parse import urlencode
 
 from django.contrib.auth import REDIRECT_FIELD_NAME
-from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.utils.http import urlquote
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
-__all__ = ['login_required', 'permission_required', 'user_passes_test']
+__all__ = ['permission_required', 'user_passes_test']
 
 
 def user_passes_test(test_func, login_url=None, redirect_field_name=REDIRECT_FIELD_NAME):

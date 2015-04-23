@@ -186,9 +186,9 @@ def login(request, next_page=None, required=False, gateway=False):
             else:
                 return HttpResponseRedirect(_login_url(service, ticket, False))
         else:
+            logger.warning('User has a valid ticket but not a valid session')
             # Has ticket, not session
             if getattr(settings, 'CAS_CUSTOM_FORBIDDEN'):
-
                 return HttpResponseRedirect(reverse(settings.CAS_CUSTOM_FORBIDDEN) + "?" + request.META['QUERY_STRING'])
             else:
                 error = "<h1>Forbidden</h1><p>Login failed.</p>"
@@ -240,5 +240,6 @@ def proxy_callback(request):
         request.session['pgt-TICKET'] = ticket
         return HttpResponse('PGT ticket is: %s' % str(ticket, content_type="text/plain"))
     except:
+        logger.warning('PGT storage failed.')
         return HttpResponse('PGT storage failed for %s' % str(request.GET), content_type="text/plain")
 
