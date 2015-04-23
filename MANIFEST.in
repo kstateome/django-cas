@@ -1,3 +1,6 @@
 include LICENSE.mit
 include README.md
+include CHANGELOG.md
+include AUTHORS
+include CONTRIBUTORS
 recursive-exclude * *.pyc
