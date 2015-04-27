@@ -188,6 +188,11 @@ def login(request, next_page=None, required=False, gateway=False):
         else:
             logger.warning('User has a valid ticket but not a valid session')
             # Has ticket, not session
+
+            if gateway:
+                # Gatewayed responses should nto redirect.
+                return False
+
             if getattr(settings, 'CAS_CUSTOM_FORBIDDEN'):
                 return HttpResponseRedirect(reverse(settings.CAS_CUSTOM_FORBIDDEN) + "?" + request.META['QUERY_STRING'])
             else:

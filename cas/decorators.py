@@ -66,22 +66,27 @@ def gateway():
             request = args[0]
 
             if request.user.is_authenticated():
-                #Is Authed, fine
+                # Is Authed, fine
                 pass
             else:
                 path_with_params = request.path + '?' + urlencode(request.GET.copy())
                 if request.GET.get('ticket'):
-                    #Not Authed, but have a ticket!
-                    #Try to authenticate
-                    return login(request, path_with_params, False, True)
+                    # Not Authed, but have a ticket!
+                    # Try to authenticate
+                    response = login(request, path_with_params, False, True)
+                    if isinstance(response, HttpResponseRedirect):
+                        # For certain instances where a forbidden occurs, we need to pass instead of return a response.
+                        return response
                 else:
                     #Not Authed, but no ticket
                     gatewayed = request.GET.get('gatewayed')
                     if gatewayed == 'true':
                         pass
                     else:
-                        #Not Authed, try to authenticate
-                        return login(request, path_with_params, False, True)
+                        # Not Authed, try to authenticate
+                        response = login(request, path_with_params, False, True)
+                        if isinstance(response, HttpResponseRedirect):
+                            return response
 
             return func(*args)
         return wrapped_f
