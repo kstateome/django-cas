@@ -143,3 +143,7 @@ a generic ``HttpResponseForbidden`` will be returned.
 
 This fork also includes
 [Edmund Crewe's proxy ticket patch](http://code.google.com/r/edmundcrewe-proxypatch/source/browse/django-cas-proxy.patch).
+
+You can opt out of the time delay sometimes caused by proxy ticket validation by setting:
+
+    CAS_PGT_FETCH_WAIT = False

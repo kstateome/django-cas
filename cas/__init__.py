@@ -17,6 +17,7 @@ _DEFAULTS = {
     'CAS_PROXY_CALLBACK': None,
     'CAS_RESPONSE_CALLBACKS': None,
     'CAS_CUSTOM_FORBIDDEN': None,
+    'CAS_PGT_FETCH_WAIT': True,
 }
 
 for key, value in _DEFAULTS.items():

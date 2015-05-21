@@ -233,13 +233,17 @@ def proxy_callback(request):
     tgt = request.GET.get('pgtId')
 
     if not (pgtIou and tgt):
+        logger.info('No pgtIou or tgt found in request.GET')
         return HttpResponse('No pgtIOO', content_type="text/plain")
 
     try:
         PgtIOU.objects.create(tgt=tgt, pgtIou=pgtIou, created=datetime.datetime.now())
-        request.session['pgt-TICKET'] = ticket
-        return HttpResponse('PGT ticket is: %s' % str(ticket, content_type="text/plain"))
-    except:
-        logger.warning('PGT storage failed.')
-        return HttpResponse('PGT storage failed for %s' % str(request.GET), content_type="text/plain")
+        request.session['pgt-TICKET'] = pgtIou
+        return HttpResponse('PGT ticket is: {ticket}'.format(ticket=pgtIou), content_type="text/plain")
+    except Exception as e:
+        logger.warning('PGT storage failed. {message}'.format(
+            message=e
+        ))
+        return HttpResponse('PGT storage failed for {request}'.format(request=str(request.GET)),
+                            content_type="text/plain")
 
