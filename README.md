@@ -14,7 +14,7 @@ This is [K-State&#39;s fork](https://github.com/kstateome/django-cas) of [the or
 
 This project is registered on PyPi as django-cas-client.  To install::
 
-    pip install django-cas-client==1.1.1
+    pip install django-cas-client==1.1.2
     
     
 ### Add to URLs
