@@ -208,7 +208,7 @@ def _get_pgtiou(pgt):
                 time.sleep(1)
             retries_left -= 1
             logger.info('Did not fetch ticket, trying again.  {tries} tries left.'.format(
-                tires=retries_left
+                tries=retries_left
             ))
     raise CasTicketException("Could not find pgtIou for pgt %s" % pgt)
 
