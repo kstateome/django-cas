@@ -14,7 +14,7 @@ This is [K-State&#39;s fork](https://github.com/kstateome/django-cas) of [the or
 
 This project is registered on PyPi as django-cas-client.  To install::
 
-    pip install django-cas-client==1.1.1
+    pip install django-cas-client==1.1.2
     
     
 ### Add to URLs
@@ -143,3 +143,7 @@ a generic ``HttpResponseForbidden`` will be returned.
 
 This fork also includes
 [Edmund Crewe's proxy ticket patch](http://code.google.com/r/edmundcrewe-proxypatch/source/browse/django-cas-proxy.patch).
+
+You can opt out of the time delay sometimes caused by proxy ticket validation by setting:
+
+    CAS_PGT_FETCH_WAIT = False

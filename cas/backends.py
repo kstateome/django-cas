@@ -112,9 +112,14 @@ def _internal_verify_cas(ticket, service, suffix):
                     pgtIou.delete()
                 except Tgt.DoesNotExist:
                     Tgt.objects.create(username=username, tgt=pgtIou.tgt)
+                    logger.info('Creating TGT ticket for {user}'.format(
+                        user=username
+                    ))
                     pgtIou.delete()
-                except Exception:
-                    logger.error('Failed to do proxy authentication.')
+                except Exception as e:
+                    logger.warning('Failed to do proxy authentication. {message}'.format(
+                        message=e
+                    ))
 
         else:
             failure = document.getElementsByTagName('cas:authenticationFailure')
@@ -123,7 +128,9 @@ def _internal_verify_cas(ticket, service, suffix):
                             failure[0].firstChild.nodeValue)
 
     except Exception as e:
-        logger.error('Failed to verify CAS authentication: %s', e)
+        logger.error('Failed to verify CAS authentication: {message}'.format(
+            message=e
+        ))
 
     finally:
         page.close()
@@ -181,17 +188,28 @@ def _get_pgtiou(pgt):
     ticket is retried for up to 5 seconds. This should be handled some
     better way.
 
+    Users can opt out of this waiting period by setting CAS_PGT_FETCH_WAIT = False
+
     :param: pgt
 
     """
+
     pgtIou = None
     retries_left = 5
+
+    if not settings.CAS_PGT_FETCH_WAIT:
+        retries_left = 1
+
     while not pgtIou and retries_left:
         try:
             return PgtIOU.objects.get(tgt=pgt)
         except PgtIOU.DoesNotExist:
-            time.sleep(1)
+            if settings.CAS_PGT_FETCH_WAIT:
+                time.sleep(1)
             retries_left -= 1
+            logger.info('Did not fetch ticket, trying again.  {tries} tries left.'.format(
+                tries=retries_left
+            ))
     raise CasTicketException("Could not find pgtIou for pgt %s" % pgt)
 
 
