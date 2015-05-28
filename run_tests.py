@@ -2,7 +2,6 @@
 
 import os, sys
 from django.conf import settings
-from django.test.utils import get_runner
 import django
 
 DIRNAME = os.path.dirname(__file__)
@@ -52,6 +51,7 @@ try:
     from django.test.simple import DjangoTestSuiteRunner
     test_runner = DjangoTestSuiteRunner(verbosity=1)
 except ImportError:
+    from django.test.utils import get_runner
     TestRunner = get_runner(settings)
     test_runner = TestRunner()
 failures = test_runner.run_tests(['cas', ])
