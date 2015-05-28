@@ -2,6 +2,7 @@
 
 import os, sys
 from django.conf import settings
+from django.test.utils import get_runner
 import django
 
 DIRNAME = os.path.dirname(__file__)
@@ -47,8 +48,12 @@ try:
 except AttributeError:
     pass
 
-from django.test.simple import DjangoTestSuiteRunner
-test_runner = DjangoTestSuiteRunner(verbosity=1)
+try:
+    from django.test.simple import DjangoTestSuiteRunner
+    test_runner = DjangoTestSuiteRunner(verbosity=1)
+except ImportError:
+    TestRunner = get_runner(settings)
+    test_runner = TestRunner()
 failures = test_runner.run_tests(['cas', ])
 if failures:
     sys.exit(failures)
