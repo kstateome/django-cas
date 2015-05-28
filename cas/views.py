@@ -35,7 +35,10 @@ def _service_url(request, redirect_to=None, gateway=False):
 
     """
 
-    protocol = ('http://', 'https://')[request.is_secure()]
+    if settings.CAS_FORCE_SSL_SERVICE_URL:
+        protocol = 'https://'
+    else:
+        protocol = ('http://', 'https://')[request.is_secure()]
     host = request.get_host()
     service = protocol + host + request.path
     if redirect_to:

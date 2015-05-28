@@ -47,8 +47,13 @@ try:
 except AttributeError:
     pass
 
-from django.test.simple import DjangoTestSuiteRunner
-test_runner = DjangoTestSuiteRunner(verbosity=1)
+try:
+    from django.test.simple import DjangoTestSuiteRunner
+    test_runner = DjangoTestSuiteRunner(verbosity=1)
+except ImportError:
+    from django.test.utils import get_runner
+    TestRunner = get_runner(settings)
+    test_runner = TestRunner()
 failures = test_runner.run_tests(['cas', ])
 if failures:
     sys.exit(failures)

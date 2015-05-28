@@ -18,6 +18,7 @@ _DEFAULTS = {
     'CAS_RESPONSE_CALLBACKS': None,
     'CAS_CUSTOM_FORBIDDEN': None,
     'CAS_PGT_FETCH_WAIT': True,
+    'CAS_FORCE_SSL_SERVICE_URL': False,
 }
 
 for key, value in _DEFAULTS.items():

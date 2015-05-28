@@ -1,4 +1,5 @@
 from django.test import TestCase, RequestFactory
+from django.test.utils import override_settings
 
 from cas.views import _redirect_url, _login_url, _logout_url, _service_url
 
@@ -23,6 +24,10 @@ class CASViewsTestCase(TestCase):
 
     def test_service_url(self):
         self.assertEqual(_service_url(self.request), 'http://signin.k-state.edu/')
+
+    @override_settings(CAS_FORCE_SSL_SERVICE_URL=True)
+    def test_service_url_forced_ssl(self):
+        self.assertEqual(_service_url(self.request), 'https://signin.k-state.edu/')
 
     def test_redirect_url(self):
         self.assertEqual(_redirect_url(self.request), '/')
