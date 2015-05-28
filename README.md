@@ -15,8 +15,8 @@ This is [K-State&#39;s fork](https://github.com/kstateome/django-cas) of [the or
 This project is registered on PyPi as django-cas-client.  To install::
 
     pip install django-cas-client==1.1.2
-    
-    
+
+
 ### Add to URLs
 
 Add the login and logout patterns to your main URLS conf.
@@ -34,9 +34,9 @@ Set your CAS server URL
 Add cas to middleware classes
 
     'cas.middleware.CASMiddleware',
-    
 
-### Add authentication backends 
+
+### Add authentication backends
 
     AUTHENTICATION_BACKENDS = (
         'django.contrib.auth.backends.ModelBackend',
@@ -138,6 +138,9 @@ Then, add the ``gateway`` decorator to a view:
 To show a custom forbidden page, set ``CAS_CUSTOM_FORBIDDEN`` to a ``path.to.some_view``.  Otherwise,
 a generic ``HttpResponseForbidden`` will be returned.
 
+## Require SSL login
+
+To force the service url to always target HTTPS, set ``CAS_FORCE_SSL_SERVICE_URL`` to ``True``.
 
 ## Proxy Tickets
 
