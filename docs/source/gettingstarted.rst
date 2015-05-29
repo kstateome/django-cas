@@ -1,61 +1,49 @@
-# django-cas
+Getting Started
+===============
+
+Requirements
+------------
 
 CAS client for Django.  This library requires Django 1.5 or above, and Python 2.6, 2.7, 3.4
 
-Current version: 1.2.0
 
-This is [K-State&#39;s fork](https://github.com/kstateome/django-cas) of [the original](https://bitbucket.org/cpcc/django-cas/overview) and includes [several additional features](https://github.com/kstateome/django-cas/#additional-features) as well as features merged from
-
-*  [KTHse&#39;s django-cas2](https://github.com/KTHse/django-cas2).
-*  [Edmund Crewe's proxy ticket patch](http://code.google.com/r/edmundcrewe-proxypatch/source/browse/django-cas-proxy.patch).
-
-
-## Install
+Install
+-------
 
 This project is registered on PyPi as django-cas-client.  To install::
 
-    pip install django-cas-client==1.2.0
+    pip install django-cas-client==1.1.1
 
+Configuration
+-------------
 
-### Add to URLs
+**Add to URLs**
 
-Add the login and logout patterns to your main URLS conf.
+Add the login and logout patterns to your main URLS conf::
 
-    # CAS
     url(r'^accounts/login/$', 'cas.views.login', name='login'),
     url(r'^accounts/logout/$', 'cas.views.logout', name='logout'),
 
-### Add middleware and settings
+**Add middleware and settings**
 
-Set your CAS server URL
+Set your CAS server URL::
 
     CAS_SERVER_URL = "https://signin.somehwere/cas/"
 
-Add cas to middleware classes
+Add cas to middleware classes::
 
     'cas.middleware.CASMiddleware',
 
 
-### Add authentication backends
+**Add authentication backends**
+::
 
     AUTHENTICATION_BACKENDS = (
         'django.contrib.auth.backends.ModelBackend',
         'cas.backends.CASBackend',
     )
 
-## How to Contribute
-
-Fork and branch off of the ``develop`` branch.  Submit Pull requests back to ``kstateome:develop``.
-
-### Run The Tests
-
-All PRs must pass unit tests.  To run the tests locally:
-
-    pip install -r requirements-dev.txt
-    python run_tests.py
-
-
-## Settings.py for CAS
+**Settings**
 
 Add the following to middleware if you want to use CAS::
 
@@ -71,19 +59,11 @@ Add these to ``settings.py`` to use the CAS Backend::
     CAS_LOGOUT_COMPLETELY = True
     CAS_PROVIDE_URL_TO_LOGOUT = True
 
-# Additional Features
-
-This fork contains additional features not found in the original:
-*  Proxied Hosts
-*  CAS Response Callbacks
-*  CAS Gateway
-*  Proxy Tickets (From Edmund Crewe)
-
-## Proxied Hosts
+**Proxied Hosts**
 
 You will need to setup middleware to handle the use of proxies.
 
-Add a setting ``PROXY_DOMAIN`` of the domain you want the client to use.  Then add
+Add a setting ``PROXY_DOMAIN`` of the domain you want the client to use.  Then add::
 
     MIDDLEWARE_CLASSES = (
     'cas.middleware.ProxyMiddleware',
@@ -92,18 +72,18 @@ Add a setting ``PROXY_DOMAIN`` of the domain you want the client to use.  Then a
 This middleware needs to be added before the django ``common`` middleware.
 
 
-## CAS Response Callbacks
+**CAS Response Callbacks**
 
 To store data from CAS, create a callback function that accepts the ElementTree object from the
 proxyValidate response. There can be multiple callbacks, and they can live anywhere. Define the
-callback(s) in ``settings.py``:
+callback(s) in ``settings.py``::
 
     CAS_RESPONSE_CALLBACKS = (
         'path.to.module.callbackfunction',
         'anotherpath.to.module.callbackfunction2',
     )
 
-and create the functions in ``path/to/module.py``:
+and create the functions in ``path/to/module.py``::
 
     def callbackfunction(tree):
         username = tree[0][0].text
@@ -116,43 +96,38 @@ and create the functions in ``path/to/module.py``:
         profile.save()
 
 
-## CAS Gateway
+**CAS Gateway**
 
 To use the CAS Gateway feature, first enable it in settings. Trying to use it without explicitly
-enabling this setting will raise an ImproperlyConfigured:
+enabling this setting will raise an ImproperlyConfigured::
 
     CAS_GATEWAY = True
 
-Then, add the ``gateway`` decorator to a view:
+Then, add the ``gateway`` decorator to a view::
 
     from cas.decorators import gateway
 
     @gateway()
     def foo(request):
-        #stuff
         return render(request, 'foo/bar.html')
 
 
-## Custom Forbidden Page
+**Custom Forbidden Page**
 
 To show a custom forbidden page, set ``CAS_CUSTOM_FORBIDDEN`` to a ``path.to.some_view``.  Otherwise,
 a generic ``HttpResponseForbidden`` will be returned.
 
-## Require SSL Login
+**Require SSL Login**
 
 To force the service url to always target HTTPS, set ``CAS_FORCE_SSL_SERVICE_URL`` to ``True``.
 
-## Automatically Create Users on First Login
+**Automatically Create Users on First Login**
 
 By default, a stub user record will be created on the first successful CAS authentication
 using the username in the response. If this behavior is not desired set
 ``CAS_AUTO_CREATE_USER`` to ``Flase``.
 
-## Proxy Tickets
+**Proxy Tickets**
 
 This fork also includes
 [Edmund Crewe's proxy ticket patch](http://code.google.com/r/edmundcrewe-proxypatch/source/browse/django-cas-proxy.patch).
-
-You can opt out of the time delay sometimes caused by proxy ticket validation by setting:
-
-    CAS_PGT_FETCH_WAIT = False

@@ -35,7 +35,10 @@ def _service_url(request, redirect_to=None, gateway=False):
 
     """
 
-    protocol = ('http://', 'https://')[request.is_secure()]
+    if settings.CAS_FORCE_SSL_SERVICE_URL:
+        protocol = 'https://'
+    else:
+        protocol = ('http://', 'https://')[request.is_secure()]
     host = request.get_host()
     service = protocol + host + request.path
     if redirect_to:
@@ -188,6 +191,11 @@ def login(request, next_page=None, required=False, gateway=False):
         else:
             logger.warning('User has a valid ticket but not a valid session')
             # Has ticket, not session
+
+            if gateway:
+                # Gatewayed responses should nto redirect.
+                return False
+
             if getattr(settings, 'CAS_CUSTOM_FORBIDDEN'):
                 return HttpResponseRedirect(reverse(settings.CAS_CUSTOM_FORBIDDEN) + "?" + request.META['QUERY_STRING'])
             else:
@@ -233,13 +241,17 @@ def proxy_callback(request):
     tgt = request.GET.get('pgtId')
 
     if not (pgtIou and tgt):
+        logger.info('No pgtIou or tgt found in request.GET')
         return HttpResponse('No pgtIOO', content_type="text/plain")
 
     try:
         PgtIOU.objects.create(tgt=tgt, pgtIou=pgtIou, created=datetime.datetime.now())
-        request.session['pgt-TICKET'] = ticket
-        return HttpResponse('PGT ticket is: %s' % str(ticket, content_type="text/plain"))
-    except:
-        logger.warning('PGT storage failed.')
-        return HttpResponse('PGT storage failed for %s' % str(request.GET), content_type="text/plain")
+        request.session['pgt-TICKET'] = pgtIou
+        return HttpResponse('PGT ticket is: {ticket}'.format(ticket=pgtIou), content_type="text/plain")
+    except Exception as e:
+        logger.warning('PGT storage failed. {message}'.format(
+            message=e
+        ))
+        return HttpResponse('PGT storage failed for {request}'.format(request=str(request.GET)),
+                            content_type="text/plain")
 
