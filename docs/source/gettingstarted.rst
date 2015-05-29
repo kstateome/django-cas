@@ -117,6 +117,15 @@ Then, add the ``gateway`` decorator to a view::
 To show a custom forbidden page, set ``CAS_CUSTOM_FORBIDDEN`` to a ``path.to.some_view``.  Otherwise,
 a generic ``HttpResponseForbidden`` will be returned.
 
+**Require SSL Login**
+
+To force the service url to always target HTTPS, set ``CAS_FORCE_SSL_SERVICE_URL`` to ``True``.
+
+**Automatically Create Users on First Login**
+
+By default, a stub user record will be created on the first successful CAS authentication
+using the username in the response. If this behavior is not desired set
+``CAS_AUTO_CREATE_USER`` to ``Flase``.
 
 **Proxy Tickets**
 
