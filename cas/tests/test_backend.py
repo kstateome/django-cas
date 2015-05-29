@@ -14,3 +14,17 @@ class CASBackendTest(TestCase):
         backend = CASBackend()
 
         self.assertEqual(backend.get_user(self.user.pk), self.user)
+
+    @mock.patch('cas.backends._verify')
+    def test_user_auto_create(self, verify):
+        username = 'faker'
+        verify.return_value = username
+        backend = CASBackend()
+
+        with self.settings(CAS_AUTO_CREATE_USER=False):
+            user = backend.authenticate('fake', 'fake')
+            self.assertIsNone(user)
+
+        with self.settings(CAS_AUTO_CREATE_USER=True):
+            user = backend.authenticate('fake', 'fake')
+            self.assertEquals(user.username, username)
