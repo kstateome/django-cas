@@ -1,4 +1,4 @@
-"""Django CAS 1.0/2.0 authentication backend"""
+default_app_config = 'cas.apps.CASConfig'
 
 from django.conf import settings
 
