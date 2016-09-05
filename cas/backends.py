@@ -22,6 +22,7 @@ except ImportError:
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 
 from cas.exceptions import CasTicketException
 from cas.models import Tgt, PgtIOU
@@ -236,10 +237,10 @@ class CASBackend(object):
 
         user = None
         try:
-            user = User.objects.get(email__exact=username) or User.objects.get(username__exact=username)
-        except User.DoesNotExist as e:
+            user = User.objects.get(Q(email__exact=username) | Q(username__exact=username))
+        except User.DoesNotExist:
             # user will have an "unusable" password
-            logger.error('cannot get user %s from User System' % (username, ), e)
+            logger.warn("user %s does not exist is User model %s" % (username, User))
             if settings.CAS_AUTO_CREATE_USER:
                 try:
                     email = ''
@@ -247,8 +248,8 @@ class CASBackend(object):
                         email = username
                     user = User.objects.create_user(username, email=email)
                     user.save()
-                except Exception as e:
-                    logger.error('unable to create user', e)
+                except Exception:
+                    logger.exception('unable to create user')
 
         return user
 
