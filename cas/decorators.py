@@ -37,7 +37,9 @@ def user_passes_test(test_func, login_url=None, redirect_field_name=REDIRECT_FIE
                 path = '%s?%s=%s' % (login_url, redirect_field_name,
                                      urlquote(request.get_full_path()))
                 return HttpResponseRedirect(path)
+
         return wrapper
+
     return decorator
 
 
@@ -63,6 +65,7 @@ def gateway():
         def wrapped_f(*args):
 
             from cas.views import login
+
             request = args[0]
 
             if request.user.is_authenticated():
@@ -78,7 +81,7 @@ def gateway():
                         # For certain instances where a forbidden occurs, we need to pass instead of return a response.
                         return response
                 else:
-                    #Not Authed, but no ticket
+                    # Not Authed, but no ticket
                     gatewayed = request.GET.get('gatewayed')
                     if gatewayed == 'true':
                         pass
@@ -89,5 +92,7 @@ def gateway():
                             return response
 
             return func(*args)
+
         return wrapped_f
+
     return wrap

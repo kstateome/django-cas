@@ -2,7 +2,6 @@ import logging
 
 from django.conf import settings
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -12,7 +11,7 @@ def cas_response_callbacks(tree):
 
     for path in callbacks:
         i = path.rfind('.')
-        module, callback = path[:i], path[i+1:]
+        module, callback = path[:i], path[i + 1:]
         try:
             mod = __import__(module, fromlist=[''])
         except ImportError as e:

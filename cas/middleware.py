@@ -5,7 +5,6 @@ try:
 except ImportError:
     from urllib.parse import urlencode
 
-
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth import logout as do_logout
@@ -20,7 +19,6 @@ from cas.exceptions import CasTicketException
 from cas.views import login as cas_login, logout as cas_logout
 
 __all__ = ['CASMiddleware']
-
 
 if hasattr(settings, 'SYS_LOGIN_VIEW'):
     login = import_string(getattr(settings, 'SYS_LOGIN_VIEW'))
@@ -92,7 +90,6 @@ class CASMiddleware(object):
 
 
 class ProxyMiddleware(object):
-
     # Middleware used to "fake" the django app that it lives at the Proxy Domain
     def process_request(self, request):
         proxy = getattr(settings, 'PROXY_DOMAIN', None)

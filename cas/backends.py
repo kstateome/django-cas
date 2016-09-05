@@ -20,7 +20,6 @@ try:
 except ImportError:
     from urllib.parse import urljoin
 
-
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
@@ -169,6 +168,7 @@ def verify_proxy_ticket(ticket, service):
             return None
     finally:
         page.close()
+
 
 _PROTOCOLS = {'1': _verify_cas1, '2': _verify_cas2, '3': _verify_cas3}
 
