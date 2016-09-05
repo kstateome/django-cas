@@ -64,6 +64,8 @@ class Tgt(models.Model):
         finally:
             page.close()
 
+    class Meta:
+        app_label = 'cas'
 
 class PgtIOU(models.Model):
     """
@@ -72,6 +74,9 @@ class PgtIOU(models.Model):
     pgtIou = models.CharField(max_length = 255, unique = True)
     tgt = models.CharField(max_length = 255)
     created = models.DateTimeField(auto_now = True)
+
+    class Meta:
+        app_label = 'cas'
 
 
 def get_tgt_for(user):

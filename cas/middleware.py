@@ -5,6 +5,7 @@ try:
 except ImportError:
     from urllib.parse import urlencode
 
+
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth import logout as do_logout
@@ -12,11 +13,20 @@ from django.contrib.auth.views import login, logout
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.core.exceptions import ImproperlyConfigured
+from django.conf import settings
+from django.utils.module_loading import import_string
 
 from cas.exceptions import CasTicketException
 from cas.views import login as cas_login, logout as cas_logout
 
 __all__ = ['CASMiddleware']
+
+
+if hasattr(settings, 'SYS_LOGIN_VIEW'):
+    login = import_string(getattr(settings, 'SYS_LOGIN_VIEW'))
+
+if hasattr(settings, 'SYS_LOGOUT_VIEW'):
+    logout = import_string(getattr(settings, 'SYS_LOGOUT_VIEW'))
 
 
 class CASMiddleware(object):
@@ -65,7 +75,7 @@ class CASMiddleware(object):
                 return HttpResponseForbidden(error)
 
         params = urlencode({REDIRECT_FIELD_NAME: request.get_full_path()})
-        return HttpResponseRedirect(reverse(cas_login) + '?' + params)
+        return HttpResponseRedirect(reverse(login) + '?' + params)
 
     def process_exception(self, request, exception):
         """
