@@ -73,7 +73,7 @@ def _service_url(request, redirect_to=None, gateway=False):
 
             service += urlencode(sorted_params)
         else:
-            service += urlparse.quote(urlencode({REDIRECT_FIELD_NAME: redirect_to}))
+            service += urlquote(urlencode({REDIRECT_FIELD_NAME: redirect_to}))
 
     return service
 
