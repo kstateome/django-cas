@@ -25,7 +25,8 @@ from django.contrib.auth import get_user_model
 
 from cas.exceptions import CasTicketException
 from cas.models import Tgt, PgtIOU
-from cas.utils import cas_response_callbacks
+from cas.utils import (cas_response_callbacks,
+                       is_email)
 
 __all__ = ['CASBackend']
 
@@ -233,15 +234,21 @@ class CASBackend(object):
         if not username:
             return None
 
+        user = None
         try:
             user = User.objects.get(email__exact=username) or User.objects.get(username__exact=username)
         except User.DoesNotExist:
             # user will have an "unusable" password
             if settings.CAS_AUTO_CREATE_USER:
-                user = User.objects.create_user(username, '')
-                user.save()
-            else:
-                user = None
+                try:
+                    email = ''
+                    if is_email(username):
+                        email = username
+                    user = User.objects.create_user(username, email=email)
+                    user.save()
+                except Exception as e:
+                    logger.error('unable to create user', e)
+
         return user
 
     def get_user(self, user_id):

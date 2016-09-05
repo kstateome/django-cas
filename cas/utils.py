@@ -1,8 +1,11 @@
 import logging
 
 from django.conf import settings
+import re
 
 logger = logging.getLogger(__name__)
+
+EMAIL_REGX = re.compile(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$')
 
 
 def cas_response_callbacks(tree):
@@ -23,3 +26,7 @@ def cas_response_callbacks(tree):
             logger.error("Attribute Error: %s" % e)
             raise e
         func(tree)
+
+
+def is_email(string):
+    return EMAIL_REGX.match(string)
