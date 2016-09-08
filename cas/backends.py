@@ -99,7 +99,7 @@ def _internal_verify_cas(ticket, service, suffix):
             if settings.CAS_RESPONSE_CALLBACKS:
                 cas_response_callbacks(tree)
 
-            username = tree[0][0].text
+            username = tree[0][0].text.strip()
 
             pgt_el = document.getElementsByTagName('cas:proxyGrantingTicket')
 
