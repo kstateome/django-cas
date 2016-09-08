@@ -1,6 +1,6 @@
 # django-cas
 
-CAS client for Django.  This library requires Django 1.5 or above, and Python 2.6, 2.7, 3.4
+CAS client for Django.  This library requires Django 1.8 or above, and Python 2.6, 2.7, 3.4
 
 Current version: 1.2.0
 
