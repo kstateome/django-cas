@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+
 try:
     from xml.etree import ElementTree
 except ImportError:
@@ -22,9 +23,7 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save
 
-
 from cas.exceptions import CasTicketException, CasConfigException
-
 
 logger = logging.getLogger(__name__)
 
@@ -64,14 +63,20 @@ class Tgt(models.Model):
         finally:
             page.close()
 
+    class Meta:
+        app_label = 'cas'
+
 
 class PgtIOU(models.Model):
     """
     Proxy granting ticket and IOU
     """
-    pgtIou = models.CharField(max_length = 255, unique = True)
-    tgt = models.CharField(max_length = 255)
-    created = models.DateTimeField(auto_now = True)
+    pgtIou = models.CharField(max_length=255, unique=True)
+    tgt = models.CharField(max_length=255)
+    created = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = 'cas'
 
 
 def get_tgt_for(user):
@@ -104,5 +109,6 @@ def delete_old_tickets(**kwargs):
     now = datetime.now()
     expire = datetime(now.year, now.month, now.day - 2)
     sender.objects.filter(created__lt=expire).delete()
+
 
 post_save.connect(delete_old_tickets, sender=PgtIOU)

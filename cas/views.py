@@ -3,8 +3,11 @@ import datetime
 
 try:
     from urllib import urlencode
+    from urllib import quote as urlquote
 except ImportError:
     from urllib.parse import urlencode
+    from urllib.parse import quote as urlquote
+
 try:
     import urlparse
 except ImportError:
@@ -65,12 +68,12 @@ def _service_url(request, redirect_to=None, gateway=False):
                         gateway_params.pop(index)
             extra_params = gateway_params + query_list
 
-            #Sort params by key name so they are always in the same order.
+            # Sort params by key name so they are always in the same order.
             sorted_params = sorted(extra_params, key=itemgetter(0))
 
             service += urlencode(sorted_params)
         else:
-            service += urlencode({REDIRECT_FIELD_NAME: redirect_to})
+            service += urlquote(urlencode({REDIRECT_FIELD_NAME: redirect_to}))
 
     return service
 
@@ -83,8 +86,11 @@ def _redirect_url(request):
     :param: request RequestObj
 
     """
-
     next = request.GET.get(REDIRECT_FIELD_NAME)
+
+    for key, value in request.GET.items():
+        if key.startswith('next='):
+            next = urlparse.unquote(key.split('=', 2)[1])
 
     if not next:
         if settings.CAS_IGNORE_REFERER:
@@ -143,7 +149,7 @@ def _logout_url(request, next_page=None):
     if next_page and getattr(settings, 'CAS_PROVIDE_URL_TO_LOGOUT', True):
         protocol = ('http://', 'https://')[request.is_secure()]
         host = request.get_host()
-        url += '?' + urlencode({'service': protocol + host + next_page})
+        url += '?' + urlencode({'url': protocol + host + next_page})
 
     return url
 
@@ -176,7 +182,6 @@ def login(request, next_page=None, required=False, gateway=False):
         user = auth.authenticate(ticket=ticket, service=service)
 
         if user is not None:
-
             auth.login(request, user)
 
             if settings.CAS_PROXY_CALLBACK:
@@ -254,4 +259,3 @@ def proxy_callback(request):
         ))
         return HttpResponse('PGT storage failed for {request}'.format(request=str(request.GET)),
                             content_type="text/plain")
-

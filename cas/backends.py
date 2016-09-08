@@ -20,13 +20,14 @@ try:
 except ImportError:
     from urllib.parse import urljoin
 
-
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 
 from cas.exceptions import CasTicketException
 from cas.models import Tgt, PgtIOU
-from cas.utils import cas_response_callbacks
+from cas.utils import (cas_response_callbacks,
+                       is_email)
 
 __all__ = ['CASBackend']
 
@@ -98,7 +99,7 @@ def _internal_verify_cas(ticket, service, suffix):
             if settings.CAS_RESPONSE_CALLBACKS:
                 cas_response_callbacks(tree)
 
-            username = tree[0][0].text
+            username = tree[0][0].text.strip()
 
             pgt_el = document.getElementsByTagName('cas:proxyGrantingTicket')
 
@@ -170,6 +171,7 @@ def verify_proxy_ticket(ticket, service):
     finally:
         page.close()
 
+
 _PROTOCOLS = {'1': _verify_cas1, '2': _verify_cas2, '3': _verify_cas3}
 
 if settings.CAS_VERSION not in _PROTOCOLS:
@@ -233,15 +235,25 @@ class CASBackend(object):
         if not username:
             return None
 
+        user = None
         try:
-            user = User.objects.get(username__iexact=username)
+            if hasattr(User.objects, 'get_by_natural_key'):
+                user = User.objects.get_by_natural_key(username)
+            else:
+                user = User.objects.get(Q(email__exact=username) | Q(username__exact=username))
         except User.DoesNotExist:
             # user will have an "unusable" password
+            logger.warn("user %s does not exist is User model %s" % (username, User))
             if settings.CAS_AUTO_CREATE_USER:
-                user = User.objects.create_user(username, '')
-                user.save()
-            else:
-                user = None
+                try:
+                    email = ''
+                    if is_email(username):
+                        email = username
+                    user = User.objects.create_user(username, email=email)
+                    user.save()
+                except Exception:
+                    logger.exception('unable to create user')
+
         return user
 
     def get_user(self, user_id):
