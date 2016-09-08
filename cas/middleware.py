@@ -13,7 +13,11 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
-from django.utils.module_loading import import_string
+
+try:
+    from django.utils.module_loading import import_string
+except ImportError:
+    from cas.utils import import_string
 
 from cas.exceptions import CasTicketException
 from cas.views import login as cas_login, logout as cas_logout
