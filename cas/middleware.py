@@ -90,7 +90,7 @@ class CASMiddleware(MIDDLEWARE_BASE):
             return None
 
 
-class ProxyMiddleware(object):
+class ProxyMiddleware(MIDDLEWARE_BASE):
 
     # Middleware used to "fake" the django app that it lives at the Proxy Domain
     def process_request(self, request):
