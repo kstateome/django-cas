@@ -5,6 +5,15 @@ try:
 except ImportError:
     from urllib.parse import urlencode
 
+
+MIDDLEWARE_BASE = None
+
+try:
+    from django.utils.deprecation import MiddlewareMixin
+    MIDDLEWARE_BASE = MiddlewareMixin
+except ImportError:
+    MIDDLEWARE_BASE = object
+
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth import logout as do_logout
@@ -19,7 +28,7 @@ from cas.views import login as cas_login, logout as cas_logout
 __all__ = ['CASMiddleware']
 
 
-class CASMiddleware(object):
+class CASMiddleware(MIDDLEWARE_BASE):
     """
     Middleware that allows CAS authentication on admin pages
     """
