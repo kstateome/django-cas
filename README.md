@@ -146,7 +146,7 @@ To force the service url to always target HTTPS, set ``CAS_FORCE_SSL_SERVICE_URL
 
 By default, a stub user record will be created on the first successful CAS authentication
 using the username in the response. If this behavior is not desired set
-``CAS_AUTO_CREATE_USER`` to ``Flase``.
+``CAS_AUTO_CREATE_USER`` to ``False``.
 
 ## Proxy Tickets
 
