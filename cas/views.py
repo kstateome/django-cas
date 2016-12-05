@@ -141,7 +141,8 @@ def _logout_url(request, next_page=None):
     url = urlparse.urljoin(settings.CAS_SERVER_URL, 'logout')
 
     if next_page and getattr(settings, 'CAS_PROVIDE_URL_TO_LOGOUT', True):
-        if len(next_page.split(':')) > 1: #If next_page is a protocol-rooted url, skip redirect url construction 
+        parsed_url = urlparse.urlparse(next_page)
+        if parsed_url.scheme: #If next_page is a protocol-rooted url, skip redirect url construction
             url += '?' + urlencode({'service': next_page})
         else:
             protocol = ('http://', 'https://')[request.is_secure()]
