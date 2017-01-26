@@ -71,7 +71,7 @@ def _service_url(request, redirect_to=None, gateway=False):
             service += urlencode(sorted_params)
         else:
             try:
-                redirect_to = u"%s" % redirect_to
+                redirect_to = u"%s" % redirect_to.encode('utf-8')
             except UnicodeDecodeError:
                 redirect_to = redirect_to.decode("utf-8")
             service += urlencode({REDIRECT_FIELD_NAME: redirect_to})
