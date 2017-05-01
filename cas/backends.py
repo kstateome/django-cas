@@ -234,7 +234,10 @@ class CASBackend(object):
             return None
 
         try:
-            user = User.objects.get(username__iexact=username)
+            query_parameter = {
+                User.USERNAME_FIELD: username
+            }
+            user = User.objects.get(**query_parameter)
         except User.DoesNotExist:
             # user will have an "unusable" password
             if settings.CAS_AUTO_CREATE_USER:
