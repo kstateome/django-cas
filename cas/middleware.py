@@ -12,6 +12,10 @@ from django.contrib.auth.views import login, logout
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.core.exceptions import ImproperlyConfigured
+try:
+    from django.utils.deprecation import MiddlewareMixin
+except ImportError:
+    MiddlewareMixin = object
 
 from cas.exceptions import CasTicketException
 from cas.views import login as cas_login, logout as cas_logout
@@ -19,7 +23,7 @@ from cas.views import login as cas_login, logout as cas_logout
 __all__ = ['CASMiddleware']
 
 
-class CASMiddleware(object):
+class CASMiddleware(MiddlewareMixin):
     """
     Middleware that allows CAS authentication on admin pages
     """
@@ -81,7 +85,7 @@ class CASMiddleware(object):
             return None
 
 
-class ProxyMiddleware(object):
+class ProxyMiddleware(MiddlewareMixin):
 
     # Middleware used to "fake" the django app that it lives at the Proxy Domain
     def process_request(self, request):
