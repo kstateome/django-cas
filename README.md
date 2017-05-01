@@ -2,7 +2,7 @@
 
 CAS client for Django.  This library requires Django 1.5 or above, and Python 2.6, 2.7, 3.4
 
-Current version: 1.2.0
+Current version: 1.3.0
 
 This is [K-State&#39;s fork](https://github.com/kstateome/django-cas) of [the original](https://bitbucket.org/cpcc/django-cas/overview) and includes [several additional features](https://github.com/kstateome/django-cas/#additional-features) as well as features merged from
 
@@ -14,7 +14,7 @@ This is [K-State&#39;s fork](https://github.com/kstateome/django-cas) of [the or
 
 This project is registered on PyPi as django-cas-client.  To install::
 
-    pip install django-cas-client==1.2.0
+    pip install django-cas-client==1.3.0
 
 
 ### Add to URLs
@@ -146,7 +146,7 @@ To force the service url to always target HTTPS, set ``CAS_FORCE_SSL_SERVICE_URL
 
 By default, a stub user record will be created on the first successful CAS authentication
 using the username in the response. If this behavior is not desired set
-``CAS_AUTO_CREATE_USER`` to ``Flase``.
+``CAS_AUTO_CREATE_USER`` to ``False``.
 
 ## Proxy Tickets
 
