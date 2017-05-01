@@ -1,7 +1,14 @@
 Changelog
 =========
 
-1.2.0 (Unreleased)
+1.3.0
+------------------
+
+- Compatibility with Django 1.10 Middleware (https://github.com/kstateome/django-cas/pull/69)
+- Add support for protocol-rooted URL as "next_page" argument for _logout_url constructor (https://github.com/kstateome/django-cas/pull/67)
+- Fix typo (https://github.com/kstateome/django-cas/pull/65)
+
+1.2.0
 ------------------
 
 - Allow opt out of time delay caused by fetching PGT tickets
