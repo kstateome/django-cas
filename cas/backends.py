@@ -65,7 +65,7 @@ def _verify_cas2(ticket, service):
     :param: ticket
     :param: service
     """
-    return _internal_verify_cas(ticket, service, 'proxyValidate')
+    return _internal_verify_cas(ticket, service, 'serviceValidate')
 
 
 def _verify_cas3(ticket, service):
