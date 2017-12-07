@@ -16,7 +16,11 @@ from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpRespons
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib import auth
-from django.core.urlresolvers import reverse
+
+try:
+    from django.urls import reverse
+except ImportError:
+    from django.core.urlresolvers import reverse
 
 from cas.models import PgtIOU
 
@@ -166,7 +170,13 @@ def login(request, next_page=None, required=False, gateway=False):
     if not next_page:
         next_page = _redirect_url(request)
 
-    if request.user.is_authenticated():
+    try:
+        # use callable for pre-django 2.0
+        is_authenticated = request.user.is_authenticated()
+    except TypeError:
+        is_authenticated = request.user.is_authenticated
+
+    if is_authenticated:
         return HttpResponseRedirect(next_page)
 
     ticket = request.GET.get('ticket')

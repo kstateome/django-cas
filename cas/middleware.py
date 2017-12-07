@@ -9,9 +9,12 @@ from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth import logout as do_logout
 from django.contrib.auth.views import login, logout
-from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.core.exceptions import ImproperlyConfigured
+try:
+    from django.urls import reverse
+except ImportError:
+    from django.core.urlresolvers import reverse
 try:
     from django.utils.deprecation import MiddlewareMixin
 except ImportError:
