@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.4.0
+------------------
+- Compatibility with Django 2.0 (https://github.com/kstateome/django-cas/pull/72)
+
 1.3.0
 ------------------
 

@@ -29,9 +29,16 @@ def user_passes_test(test_func, login_url=None, redirect_field_name=REDIRECT_FIE
     def decorator(view_func):
         @wraps(view_func)
         def wrapper(request, *args, **kwargs):
+
+            try:
+                # use callable for pre-django 2.0
+                is_authenticated = request.user.is_authenticated()
+            except TypeError:
+                is_authenticated = request.user.is_authenticated
+
             if test_func(request.user):
                 return view_func(request, *args, **kwargs)
-            elif request.user.is_authenticated():
+            elif is_authenticated:
                 return HttpResponseForbidden('<h1>Permission denied</h1>')
             else:
                 path = '%s?%s=%s' % (login_url, redirect_field_name,
@@ -65,7 +72,13 @@ def gateway():
             from cas.views import login
             request = args[0]
 
-            if request.user.is_authenticated():
+            try:
+                # use callable for pre-django 2.0
+                is_authenticated = request.user.is_authenticated()
+            except TypeError:
+                is_authenticated = request.user.is_authenticated
+
+            if is_authenticated:
                 # Is Authed, fine
                 pass
             else:

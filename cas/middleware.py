@@ -9,9 +9,12 @@ from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth import logout as do_logout
 from django.contrib.auth.views import login, logout
-from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.core.exceptions import ImproperlyConfigured
+try:
+    from django.urls import reverse
+except ImportError:
+    from django.core.urlresolvers import reverse
 try:
     from django.utils.deprecation import MiddlewareMixin
 except ImportError:
@@ -60,7 +63,13 @@ class CASMiddleware(MiddlewareMixin):
         elif not view_func.__module__.startswith('django.contrib.admin.'):
             return None
 
-        if request.user.is_authenticated():
+        try:
+            # use callable for pre-django 2.0
+            is_authenticated = request.user.is_authenticated()
+        except TypeError:
+            is_authenticated = request.user.is_authenticated
+
+        if is_authenticated:
             if request.user.is_staff:
                 return None
             else:
