@@ -20,6 +20,7 @@ This project is registered on PyPi as django-cas-client.  To install::
 ### Add to URLs
 
 Add the login and logout patterns to your main URLS conf.
+
     import cas.views
 
     ...
