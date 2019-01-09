@@ -8,7 +8,12 @@ except ImportError:
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth import logout as do_logout
-from django.contrib.auth.views import login, logout
+
+try:
+    from django.contrib.auth.views import login, logout
+except:
+    from django.contrib.auth import login, logout
+
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.core.exceptions import ImproperlyConfigured
 try:
