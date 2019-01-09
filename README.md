@@ -21,9 +21,13 @@ This project is registered on PyPi as django-cas-client.  To install::
 
 Add the login and logout patterns to your main URLS conf.
 
+    import cas.views
+
+    ...
+
     # CAS
-    url(r'^accounts/login/$', 'cas.views.login', name='login'),
-    url(r'^accounts/logout/$', 'cas.views.logout', name='logout'),
+    path('admin/login/', cas.views.login, name='login'),
+    path('admin/logout/', cas.views.logout, name='logout'),
 
 ### Add middleware and settings
 
