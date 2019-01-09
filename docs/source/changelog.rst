@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.5.0
+------------------
+- Path Change (https://github.com/kstateome/django-cas/pull/76)
+- Update authenticate method (https://github.com/kstateome/django-cas/pull/77/files)
+
 1.4.0
 ------------------
 - Compatibility with Django 2.0 (https://github.com/kstateome/django-cas/pull/72)
