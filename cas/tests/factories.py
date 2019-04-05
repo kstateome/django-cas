@@ -12,4 +12,4 @@ class UserFactory(factory.DjangoModelFactory):
     first_name = "new"
     last_name = "user"
     is_staff = True
-    password = factory.PostGenerationMethodCall('set_password', '1234')
+    password = factory.PostGenerationMethodCall('set_unusable_password')
