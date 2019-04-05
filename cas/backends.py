@@ -234,7 +234,7 @@ class CASBackend(object):
             return None
 
         try:
-            user = User.objects.get(username__iexact=username)
+            user = User._default_manager.get_by_natural_key(username)
         except User.DoesNotExist:
             # user will have an "unusable" password
             if settings.CAS_AUTO_CREATE_USER:

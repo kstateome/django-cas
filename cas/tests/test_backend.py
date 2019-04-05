@@ -27,4 +27,4 @@ class CASBackendTest(TestCase):
 
         with self.settings(CAS_AUTO_CREATE_USER=True):
             user = backend.authenticate('fake', 'fake')
-            self.assertEquals(user.username, username)
+            self.assertEquals(user.get_username(), username)
