@@ -180,11 +180,7 @@ def login(request, next_page=None, required=False, gateway=False):
         return HttpResponseRedirect(next_page)
 
     ticket = request.GET.get('ticket')
-
-    if gateway:
-        service = _service_url(request, next_page, True)
-    else:
-        service = _service_url(request, next_page, False)
+    service = _service_url(request, next_page, gateway)
 
     if ticket:
         user = auth.authenticate(ticket=ticket, service=service)
