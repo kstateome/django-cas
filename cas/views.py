@@ -42,7 +42,7 @@ def _service_url(request, redirect_to=None, gateway=False):
     if settings.CAS_FORCE_SSL_SERVICE_URL:
         protocol = 'https://'
     else:
-        protocol = ('http://', 'https://')[request.is_secure()]
+        protocol = 'https://' if request.is_secure() else 'http://'
     host = request.get_host()
     service = protocol + host + request.path
     if redirect_to:
@@ -97,7 +97,8 @@ def _redirect_url(request):
             next = request.META.get('HTTP_REFERER', settings.CAS_REDIRECT_URL)
 
         host = request.get_host()
-        prefix = (('http://', 'https://')[request.is_secure()] + host)
+        protocol = 'https://' if request.is_secure() else 'http://'
+        prefix = protocol + host
 
         if next.startswith(prefix):
             next = next[len(prefix):]
@@ -149,7 +150,7 @@ def _logout_url(request, next_page=None):
         if parsed_url.scheme: #If next_page is a protocol-rooted url, skip redirect url construction
             url += '?' + urlencode({'service': next_page})
         else:
-            protocol = ('http://', 'https://')[request.is_secure()]
+            protocol = 'https://' if request.is_secure() else 'http://'
             host = request.get_host()
             url += '?' + urlencode({'service': protocol + host + next_page})
 
