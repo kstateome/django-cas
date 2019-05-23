@@ -194,10 +194,7 @@ def login(request, next_page=None, required=False, gateway=False):
 
             return HttpResponseRedirect(next_page)
         elif settings.CAS_RETRY_LOGIN or required:
-            if gateway:
-                return HttpResponseRedirect(_login_url(service, ticket, True))
-            else:
-                return HttpResponseRedirect(_login_url(service, ticket, False))
+            return HttpResponseRedirect(_login_url(service, ticket, gateway))
         else:
             logger.warning('User has a valid ticket but not a valid session')
             # Has ticket, not session
@@ -212,10 +209,7 @@ def login(request, next_page=None, required=False, gateway=False):
                 error = "<h1>Forbidden</h1><p>Login failed.</p>"
                 return HttpResponseForbidden(error)
     else:
-        if gateway:
-            return HttpResponseRedirect(_login_url(service, ticket, True))
-        else:
-            return HttpResponseRedirect(_login_url(service, ticket, False))
+        return HttpResponseRedirect(_login_url(service, ticket, gateway))
 
 
 def logout(request, next_page=None):
