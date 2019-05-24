@@ -181,8 +181,8 @@ _verify = _PROTOCOLS[settings.CAS_VERSION]
 def _get_pgt_iou_mapping(pgt_iou):
     """
      Returns the instance of PgtIou -> Pgt mapping which is associated with the provided pgt_iou token.
-     Because this mapping is created in a  different request which the CAS server makes to the proxy callback url which
-     has completed before this call it may not be found in the database by this calling thread, hence the attempt to get
+     Because this mapping is created in a  different request which the CAS server makes to the proxy callback url, the
+     PGTIOU->PGT mapping might not be found yet in the database by this calling thread, hence the attempt to get
      the ticket is retried for up to 5 seconds.
      This should be handled some better way.
 
