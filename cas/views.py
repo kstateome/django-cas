@@ -19,6 +19,7 @@ from django.contrib import auth
 from django.core.urlresolvers import reverse
 
 from cas.models import PgtIOU
+from cas.utils import get_cas_server_url
 
 __all__ = ['login', 'logout']
 
@@ -126,7 +127,7 @@ def _login_url(service, ticket='ST', gateway=False):
 
     login_type = LOGINS.get(ticket[:2], 'login')
 
-    return urlparse.urljoin(settings.CAS_SERVER_URL, login_type) + '?' + urlencode(params)
+    return urlparse.urljoin(get_cas_server_url(service), login_type) + '?' + urlencode(params)
 
 
 def _logout_url(request, next_page=None):
@@ -138,7 +139,7 @@ def _logout_url(request, next_page=None):
 
     """
 
-    url = urlparse.urljoin(settings.CAS_SERVER_URL, 'logout')
+    url = urlparse.urljoin(get_cas_server_url(service), 'logout')
 
     if next_page and getattr(settings, 'CAS_PROVIDE_URL_TO_LOGOUT', True):
         protocol = ('http://', 'https://')[request.is_secure()]

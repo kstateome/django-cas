@@ -26,7 +26,7 @@ from django.contrib.auth import get_user_model
 
 from cas.exceptions import CasTicketException
 from cas.models import Tgt, PgtIOU
-from cas.utils import cas_response_callbacks
+from cas.utils import cas_response_callbacks, get_cas_server_url
 
 __all__ = ['CASBackend']
 
@@ -44,7 +44,7 @@ def _verify_cas1(ticket, service):
     """
 
     params = {'ticket': ticket, 'service': service}
-    url = (urljoin(settings.CAS_SERVER_URL, 'validate') + '?' +
+    url = (urljoin(get_cas_server_url(service), 'validate') + '?' +
            urlencode(params))
     page = urlopen(url)
 
@@ -82,7 +82,7 @@ def _internal_verify_cas(ticket, service, suffix):
     if settings.CAS_PROXY_CALLBACK:
         params['pgtUrl'] = settings.CAS_PROXY_CALLBACK
 
-    url = (urljoin(settings.CAS_SERVER_URL, suffix) + '?' +
+    url = (urljoin(get_cas_server_url(service), suffix) + '?' +
            urlencode(params))
 
     page = urlopen(url)
@@ -150,7 +150,7 @@ def verify_proxy_ticket(ticket, service):
 
     params = {'ticket': ticket, 'service': service}
 
-    url = (urljoin(settings.CAS_SERVER_URL, 'proxyValidate') + '?' +
+    url = (urljoin(get_cas_server_url(service), 'proxyValidate') + '?' +
            urlencode(params))
 
     page = urlopen(url)
