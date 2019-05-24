@@ -1,7 +1,13 @@
-from django.test import TestCase, RequestFactory
+from django.test import TestCase, RequestFactory, override_settings
 from django.test.utils import override_settings
 
 from cas.views import _redirect_url, _login_url, _logout_url, _service_url
+
+
+def custom_cas_server_url(service):
+    if 'secret' in service:
+        return 'http://secret.cas.com'
+    return 'http://signin.cas.com/'
 
 
 class RequestFactoryRemix(RequestFactory):
@@ -42,5 +48,18 @@ class CASViewsTestCase(TestCase):
         self.assertEqual(_login_url('http://localhost:8000/accounts/login/'),
                          'http://signin.cas.com/login?service=http%3A%2F%2Flocalhost%3A8000%2Faccounts%2Flogin%2F')
 
-    def test_logout_url(self):
-        self.assertEqual(_logout_url(self.request), 'http://signin.cas.com/logout')
+
+    @override_settings(CAS_SERVER_URL_CALLBACK='cas.tests.test_views.custom_cas_server_url')
+    def test_login_url_custom(self):
+        self.assertEqual(_login_url('http://localhost:8000/accounts/login/?return_url=/secret/'),
+                         'http://secret.cas.com/login?service=http%3A%2F%2Flocalhost%3A8000%2Faccounts%2Flogin%2F%3Freturn_url%3D%2Fsecret%2F')
+
+    @override_settings(CAS_SERVER_URL_CALLBACK='cas.tests.test_views.custom_cas_server_url')
+    def test_login_url_custom_normal(self):
+        self.assertEqual(_login_url('http://localhost:8000/accounts/login/?return_url=/normal/'),
+                         'http://signin.cas.com/login?service=http%3A%2F%2Flocalhost%3A8000%2Faccounts%2Flogin%2F%3Freturn_url%3D%2Fnormal%2F')
+
+    @override_settings(CAS_SERVER_URL_CALLBACK='cas.nonexistent.callback')
+    def test_login_url_bad_callback_raises_exception(self):
+        with self.assertRaises(RuntimeError):
+            _ = _login_url('http://localhost:8000/accounts/login/?return_url=/normal/')
