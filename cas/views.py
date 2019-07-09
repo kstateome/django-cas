@@ -187,7 +187,7 @@ def login(request, next_page=None, required=False, gateway=False):
         service = _service_url(request, next_page, False)
 
     if ticket:
-        user = auth.authenticate(ticket=ticket, service=service)
+        user = auth.authenticate(request=request, ticket=ticket, service=service)
 
         if user is not None:
 
