@@ -1,3 +1,6 @@
+### 1.5.1
+- Include request in authenticate and evaluate gateway query_list (https://github.com/kstateome/django-cas/pull/87)
+
 ### 1.5.0
 - Path Change (https://github.com/kstateome/django-cas/pull/76)
 - Update authenticate method (https://github.com/kstateome/django-cas/pull/77/files)
