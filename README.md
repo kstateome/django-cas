@@ -16,6 +16,8 @@ This project is registered on PyPi as django-cas-client.  To install::
 
     pip install django-cas-client==1.5.1
 
+### Add to installed apps
+    'cas',
 
 ### Add to URLs
 
@@ -46,6 +48,11 @@ Add cas to middleware classes
         'django.contrib.auth.backends.ModelBackend',
         'cas.backends.CASBackend',
     )
+    
+### Add migrations
+
+    python manage.py makemigrations cas
+    python manage.py migrate cas
 
 ## How to Contribute
 
