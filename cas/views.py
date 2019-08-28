@@ -67,7 +67,7 @@ def _service_url(request, redirect_to=None, gateway=False):
                 for index, item2 in enumerate(gateway_params):
                     if item[0] == item2[0]:
                         gateway_params.pop(index)
-            extra_params = gateway_params + list(query_list)
+            extra_params = gateway_params + list(query_dict.items())
 
             #Sort params by key name so they are always in the same order.
             sorted_params = sorted(extra_params, key=itemgetter(0))
