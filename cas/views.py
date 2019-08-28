@@ -67,7 +67,7 @@ def _service_url(request, redirect_to=None, gateway=False):
                 for index, item2 in enumerate(gateway_params):
                     if item[0] == item2[0]:
                         gateway_params.pop(index)
-            extra_params = gateway_params + query_list
+            extra_params = gateway_params + list(query_list)
 
             #Sort params by key name so they are always in the same order.
             sorted_params = sorted(extra_params, key=itemgetter(0))
@@ -187,7 +187,7 @@ def login(request, next_page=None, required=False, gateway=False):
         service = _service_url(request, next_page, False)
 
     if ticket:
-        user = auth.authenticate(ticket=ticket, service=service)
+        user = auth.authenticate(request=request, ticket=ticket, service=service)
 
         if user is not None:
 

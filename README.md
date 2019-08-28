@@ -2,7 +2,7 @@
 
 CAS client for Django.  This library requires Django 1.5 or above, and Python 2.6, 2.7, 3.4
 
-Current version: 1.4.0
+Current version: 1.5.1
 
 This is [K-State&#39;s fork](https://github.com/kstateome/django-cas) of [the original](https://bitbucket.org/cpcc/django-cas/overview) and includes [several additional features](https://github.com/kstateome/django-cas/#additional-features) as well as features merged from
 
@@ -14,16 +14,20 @@ This is [K-State&#39;s fork](https://github.com/kstateome/django-cas) of [the or
 
 This project is registered on PyPi as django-cas-client.  To install::
 
-    pip install django-cas-client==1.4.0
+    pip install django-cas-client==1.5.1
 
 
 ### Add to URLs
 
 Add the login and logout patterns to your main URLS conf.
 
+    import cas.views
+
+    ...
+
     # CAS
-    url(r'^accounts/login/$', 'cas.views.login', name='login'),
-    url(r'^accounts/logout/$', 'cas.views.logout', name='logout'),
+    path('admin/login/', cas.views.login, name='login'),
+    path('admin/logout/', cas.views.logout, name='logout'),
 
 ### Add middleware and settings
 
