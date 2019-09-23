@@ -1,3 +1,6 @@
+### 1.5.2
+- Fix gateway feature (https://github.com/kstateome/django-cas/pull/91)
+
 ### 1.5.1
 - Include request in authenticate and evaluate gateway query_list (https://github.com/kstateome/django-cas/pull/87)
 
