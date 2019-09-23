@@ -2,7 +2,7 @@ import os
 
 from setuptools import setup, find_packages
 
-version = '1.5.1'
+version = '1.5.2'
 
 
 def read(fname):
@@ -13,6 +13,7 @@ setup(name='django-cas-client',
       version=version,
       description="Django Cas Client",
       long_description=read('README.md'),
+      long_description_content_type='text/markdown',
       classifiers=[
           "Development Status :: 5 - Production/Stable",
           "Environment :: Web Environment",
