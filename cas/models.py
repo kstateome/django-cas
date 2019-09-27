@@ -85,13 +85,15 @@ def get_tgt_for(user):
     if not settings.CAS_PROXY_CALLBACK:
         raise CasConfigException("No proxy callback set in settings")
 
+    username = user.get_username()
+
     try:
-        return Tgt.objects.get(username=user.username)
+        return Tgt.objects.get(username=username)
     except ObjectDoesNotExist:
         logger.warning('No ticket found for user {user}'.format(
-            user=user.username
+            user=username
         ))
-        raise CasTicketException("no ticket found for user " + user.username)
+        raise CasTicketException("no ticket found for user " + username)
 
 
 def delete_old_tickets(**kwargs):
