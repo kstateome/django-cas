@@ -99,27 +99,26 @@ def _internal_verify_cas(ticket, service, suffix):
                 cas_response_callbacks(tree)
 
             username = tree[0][0].text
+            
+            # The CAS Response includes the PGT_IOU, which we use to lookup the PGT/TGT.
+            pgt_element = document.getElementsByTagName('cas:proxyGrantingTicket')
 
-            pgt_el = document.getElementsByTagName('cas:proxyGrantingTicket')
-
-            if pgt_el:
-                pgt = pgt_el[0].firstChild.nodeValue
+            if pgt_element:
+                pgt_iou_token = pgt_element[0].firstChild.nodeValue
                 try:
-                    pgtIou = _get_pgtiou(pgt)
-                    tgt = Tgt.objects.get(username=username)
-                    tgt.tgt = pgtIou.tgt
-                    tgt.save()
-                    pgtIou.delete()
-                except Tgt.DoesNotExist:
-                    Tgt.objects.create(username=username, tgt=pgtIou.tgt)
-                    logger.info('Creating TGT ticket for {user}'.format(
-                        user=username
-                    ))
-                    pgtIou.delete()
+                    pgt_iou_mapping = _get_pgt_iou_mapping(pgt_iou_token)
                 except Exception as e:
-                    logger.warning('Failed to do proxy authentication. {message}'.format(
-                        message=e
-                    ))
+                    logger.warning('Failed to do proxy authentication. %s' % e)
+                else:
+                    try:
+                        tgt = Tgt.objects.get(username=username)
+                    except Tgt.DoesNotExist:
+                        Tgt.objects.create(username=username, tgt=pgt_iou_mapping.tgt)
+                        logger.info('Creating TGT ticket for {user}'.format(user=username))
+                    else:
+                        tgt.tgt = pgt_iou_mapping.tgt
+                        tgt.save()
+                    pgt_iou_mapping.delete()
 
         else:
             failure = document.getElementsByTagName('cas:authenticationFailure')
@@ -170,6 +169,7 @@ def verify_proxy_ticket(ticket, service):
     finally:
         page.close()
 
+
 _PROTOCOLS = {'1': _verify_cas1, '2': _verify_cas2, '3': _verify_cas3}
 
 if settings.CAS_VERSION not in _PROTOCOLS:
@@ -178,31 +178,27 @@ if settings.CAS_VERSION not in _PROTOCOLS:
 _verify = _PROTOCOLS[settings.CAS_VERSION]
 
 
-def _get_pgtiou(pgt):
+def _get_pgt_iou_mapping(pgt_iou):
     """
-    Returns a PgtIOU object given a pgt.
+     Returns the instance of PgtIou -> Pgt mapping which is associated with the provided pgt_iou token.
+     Because this mapping is created in a  different request which the CAS server makes to the proxy callback url, the
+     PGTIOU->PGT mapping might not be found yet in the database by this calling thread, hence the attempt to get
+     the ticket is retried for up to 5 seconds.
+     This should be handled some better way.
 
-    The PgtIOU (tgt) is set by the CAS server in a different request
-    that has completed before this call, however, it may not be found in
-    the database by this calling thread, hence the attempt to get the
-    ticket is retried for up to 5 seconds. This should be handled some
-    better way.
+     Users can opt out of this waiting period by setting CAS_PGT_FETCH_WAIT = False
 
-    Users can opt out of this waiting period by setting CAS_PGT_FETCH_WAIT = False
+     :param: pgt_iou
 
-    :param: pgt
-
-    """
-
-    pgtIou = None
+     """
     retries_left = 5
 
     if not settings.CAS_PGT_FETCH_WAIT:
         retries_left = 1
 
-    while not pgtIou and retries_left:
+    while retries_left:
         try:
-            return PgtIOU.objects.get(tgt=pgt)
+            return PgtIOU.objects.get(pgtIou=pgt_iou)
         except PgtIOU.DoesNotExist:
             if settings.CAS_PGT_FETCH_WAIT:
                 time.sleep(1)
@@ -210,7 +206,7 @@ def _get_pgtiou(pgt):
             logger.info('Did not fetch ticket, trying again.  {tries} tries left.'.format(
                 tries=retries_left
             ))
-    raise CasTicketException("Could not find pgtIou for pgt %s" % pgt)
+    raise CasTicketException("Could not find pgt for pgtIou %s" % pgt_iou)
 
 
 class CASBackend(object):
