@@ -1,3 +1,7 @@
+### 1.5.3
+- Fix PGT lookup during proxy authentication (https://github.com/kstateome/django-cas/pull/84)
+- Fix CASBackend test (https://github.com/kstateome/django-cas/pull/86)
+
 ### 1.5.2
 - Fix gateway feature (https://github.com/kstateome/django-cas/pull/91)
 
