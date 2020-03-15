@@ -20,3 +20,8 @@ install:
 
 script:
   - python run_tests.py
+
+branches:
+  only:
+  - master
+  - develop
