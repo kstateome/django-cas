@@ -16,7 +16,7 @@ if django.VERSION[1] < 4:
                                'ENGINE': 'django.db.backends.sqlite3',
                                }
                        },
-                       #ROOT_URLCONF='mailqueue.urls',
+                       ROOT_URLCONF='cas.tests.urls',
                        INSTALLED_APPS=('django.contrib.auth',
                                        'django.contrib.contenttypes',
                                        'django.contrib.sessions',
@@ -30,7 +30,7 @@ else:
                                'ENGINE': 'django.db.backends.sqlite3',
                                }
                        },
-                       #ROOT_URLCONF='mailqueue.urls',
+                       ROOT_URLCONF='cas.tests.urls',
                        INSTALLED_APPS=('django.contrib.auth',
                                        'django.contrib.contenttypes',
                                        'django.contrib.sessions',
