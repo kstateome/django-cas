@@ -16,11 +16,10 @@ if django.VERSION[1] < 4:
                                'ENGINE': 'django.db.backends.sqlite3',
                                }
                        },
-                       #ROOT_URLCONF='mailqueue.urls',
+                       ROOT_URLCONF='cas.tests.urls',
                        INSTALLED_APPS=('django.contrib.auth',
                                        'django.contrib.contenttypes',
                                        'django.contrib.sessions',
-                                       'django.contrib.admin',
                                        'cas',),
                        CAS_SERVER_URL = 'http://signin.cas.com',
                        )
@@ -31,11 +30,10 @@ else:
                                'ENGINE': 'django.db.backends.sqlite3',
                                }
                        },
-                       #ROOT_URLCONF='mailqueue.urls',
+                       ROOT_URLCONF='cas.tests.urls',
                        INSTALLED_APPS=('django.contrib.auth',
                                        'django.contrib.contenttypes',
                                        'django.contrib.sessions',
-                                       'django.contrib.admin',
                                        'cas',),
                        USE_TZ=True,
                        CAS_SERVER_URL = 'http://signin.cas.com',)

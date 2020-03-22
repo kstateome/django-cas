@@ -11,8 +11,10 @@ from django.contrib.auth import logout as do_logout
 
 try:
     from django.contrib.auth.views import login, logout
-except:
-    from django.contrib.auth import login, logout
+except ImportError:
+    from django.contrib.auth.views import LoginView, LogoutView
+    login = LoginView.as_view().view_class
+    logout = LogoutView.as_view().view_class
 
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.core.exceptions import ImproperlyConfigured
@@ -56,6 +58,11 @@ class CASMiddleware(MiddlewareMixin):
         login URL, as well as calls to django.contrib.auth.views.login and
         logout.
         """
+
+        try:
+            view_func = view_func.view_class
+        except AttributeError:
+            pass
 
         if view_func == login:
             return cas_login(request, *view_args, **view_kwargs)

@@ -24,6 +24,7 @@ from django.db.models.signals import post_save
 
 
 from cas.exceptions import CasTicketException, CasConfigException
+from cas.utils import get_cas_server_url
 
 
 logger = logging.getLogger(__name__)
@@ -47,7 +48,7 @@ class Tgt(models.Model):
 
         params = {'pgt': self.tgt, 'targetService': service}
 
-        url = (urljoin(settings.CAS_SERVER_URL, 'proxy') + '?' +
+        url = (urljoin(get_cas_server_url(service), 'proxy') + '?' +
                urlencode(params))
 
         page = urlopen(url)
