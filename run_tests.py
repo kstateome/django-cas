@@ -20,7 +20,6 @@ if django.VERSION[1] < 4:
                        INSTALLED_APPS=('django.contrib.auth',
                                        'django.contrib.contenttypes',
                                        'django.contrib.sessions',
-                                       'django.contrib.admin',
                                        'cas',),
                        CAS_SERVER_URL = 'http://signin.cas.com',
                        )
@@ -35,7 +34,6 @@ else:
                        INSTALLED_APPS=('django.contrib.auth',
                                        'django.contrib.contenttypes',
                                        'django.contrib.sessions',
-                                       'django.contrib.admin',
                                        'cas',),
                        USE_TZ=True,
                        CAS_SERVER_URL = 'http://signin.cas.com',)
