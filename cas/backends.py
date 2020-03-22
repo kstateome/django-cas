@@ -232,9 +232,9 @@ class CASBackend(object):
         try:
             user = User.objects.get(username__iexact=username)
         except User.DoesNotExist:
-            # user will have an "unusable" password
             if settings.CAS_AUTO_CREATE_USER:
-                user = User.objects.create_user(username, '')
+                user = User.objects.create_user(username)
+                user = self.configure_user(user)
                 user.save()
             else:
                 user = None
@@ -251,3 +251,10 @@ class CASBackend(object):
             return User.objects.get(pk=user_id)
         except User.DoesNotExist:
             return None
+
+    def configure_user(self, user):
+        """
+        Configures newly created user.
+        """
+        user.set_unusable_password()
+        return user
