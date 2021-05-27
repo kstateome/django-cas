@@ -131,3 +131,9 @@ using the username in the response. If this behavior is not desired set
 
 This fork also includes
 [Edmund Crewe's proxy ticket patch](http://code.google.com/r/edmundcrewe-proxypatch/source/browse/django-cas-proxy.patch).
+
+**Trim spaces around username when creating user**
+
+By default, if a user has authenticated using spaces after and/or before its username,
+the user's username created will have those spaces. Those spaces can be trimmed before creating
+user if ``CAS_TRIM_SPACES_AROUND_USERNAME`` is set to ``True``
