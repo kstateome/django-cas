@@ -99,6 +99,9 @@ def _internal_verify_cas(ticket, service, suffix):
                 cas_response_callbacks(tree)
 
             username = tree[0][0].text
+
+            if settings.CAS_TRIM_SPACES_AROUND_USERNAME:
+                username = tree[0][0].text.strip()
             
             # The CAS Response includes the PGT_IOU, which we use to lookup the PGT/TGT.
             pgt_element = document.getElementsByTagName('cas:proxyGrantingTicket')

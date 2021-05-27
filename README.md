@@ -160,3 +160,10 @@ This fork also includes
 You can opt out of the time delay sometimes caused by proxy ticket validation by setting:
 
     CAS_PGT_FETCH_WAIT = False
+
+## Trim spaces around username when creating user
+
+By default, if a user has authenticated using spaces after and/or before its username,
+the user's username created will have those spaces. Those spaces can be trimmed before creating
+user if ``CAS_TRIM_SPACES_AROUND_USERNAME`` is set to ``True``
+
